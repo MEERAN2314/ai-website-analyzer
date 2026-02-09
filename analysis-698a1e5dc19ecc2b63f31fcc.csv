@@ -1,0 +1,49 @@
+Website Analysis Report
+Website,https://crescent.education/
+Date,2026-02-09 17:50:36
+
+Metric,Score
+Overall Score,82.5
+UX Score,90.0
+SEO Score,95.0
+Performance Score,45.0
+Content Score,100.0
+
+Priority Recommendations
+Title,Description,Priority,Impact,Effort,Category
+Improve Page Load Speed,Optimize images and enable caching to reduce load time by 40%,High,High,Medium,Performance
+Add Meta Descriptions,Create unique meta descriptions for all pages to improve SEO,High,Medium,Low,SEO
+Enhance Mobile Responsiveness,Fix layout issues on mobile devices for better user experience,Medium,High,Medium,UX
+Improve Content Readability,Break up long paragraphs and use more headings,Medium,Medium,Low,Content
+Add Clear Call-to-Actions,Place prominent CTAs above the fold to increase conversions,High,High,Low,UX
+
+UX Issues
+59 images missing alt text
+
+UX Recommendations
+Add descriptive alt text to all images
+
+SEO Issues
+Page title length not optimal
+
+SEO Recommendations
+Optimize title length to 50-60 characters
+
+PERFORMANCE Issues
+Large page size: 1164.64KB
+Too many HTTP requests: 389
+Excessive inline styles detected
+123 render-blocking scripts
+No caching headers found
+
+PERFORMANCE Recommendations
+"Minify HTML, CSS, and JavaScript"
+Combine files and use sprite sheets
+Move inline styles to external CSS files
+Add async or defer attributes to scripts
+Implement browser caching with Cache-Control headers
+
+CONTENT Issues
+
+CONTENT Recommendations
+

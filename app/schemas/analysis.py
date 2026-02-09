@@ -27,6 +27,7 @@ class AnalysisDetail(BaseModel):
     content_analysis: Optional[Dict]
     ai_summary: Optional[str]
     priority_recommendations: Optional[List[Dict]]
+    action_plan: Optional[Dict]
     screenshot_url: Optional[str]
     pdf_url: Optional[str]
     created_at: datetime

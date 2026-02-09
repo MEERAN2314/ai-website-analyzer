@@ -83,6 +83,14 @@ async def results_page(request: Request, analysis_id: str):
         {"request": request, "analysis_id": analysis_id}
     )
 
+@app.get("/share/{share_token}", response_class=HTMLResponse)
+async def shared_analysis_page(request: Request, share_token: str):
+    """Render shared analysis page"""
+    return templates.TemplateResponse(
+        "pages/shared_analysis.html",
+        {"request": request, "share_token": share_token}
+    )
+
 # Health check
 @app.get("/health")
 async def health_check():

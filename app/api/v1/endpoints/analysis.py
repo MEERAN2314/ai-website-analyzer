@@ -98,6 +98,7 @@ async def get_analysis(analysis_id: str):
         content_analysis=analysis.get("content_analysis"),
         ai_summary=analysis.get("ai_summary"),
         priority_recommendations=analysis.get("priority_recommendations"),
+        action_plan=analysis.get("action_plan"),
         screenshot_url=analysis.get("screenshot_url"),
         pdf_url=analysis.get("pdf_url"),
         created_at=analysis["created_at"],

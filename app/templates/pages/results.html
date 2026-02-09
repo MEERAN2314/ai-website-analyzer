@@ -91,13 +91,69 @@
                             <p class="text-gray-600">Overall Score</p>
                         </div>
                         <div class="flex flex-col space-y-2">
+                            <!-- Action Plan Button -->
+                            <button
+                                id="actionPlanBtn"
+                                class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition flex items-center space-x-2 shadow-md"
+                            >
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                </svg>
+                                <span>30/60/90 Day Plan</span>
+                            </button>
+                            
+                            <!-- Download PDF Button -->
                             <button
                                 id="downloadPdfBtn"
-                                class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition flex items-center space-x-2"
+                                class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition flex items-center space-x-2 shadow-md"
                             >
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                 </svg>
+                                <span>Download PDF</span>
+                            </button>
+                            
+                            <!-- Export Dropdown -->
+                            <div class="relative">
+                                <button
+                                    id="exportBtn"
+                                    class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition flex items-center space-x-2 w-full shadow-md"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                                    </svg>
+                                    <span>Export</span>
+                                    <svg class="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                <div id="exportMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10">
+                                    <a href="#" id="exportJson" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
+                                        <span class="flex items-center space-x-2">
+                                            <span>📄</span>
+                                            <span>Export as JSON</span>
+                                        </span>
+                                    </a>
+                                    <a href="#" id="exportCsv" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
+                                        <span class="flex items-center space-x-2">
+                                            <span>📊</span>
+                                            <span>Export as CSV</span>
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Share Button -->
+                            <button
+                                id="shareBtn"
+                                class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition flex items-center space-x-2 shadow-md"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                                </svg>
+                                <span>Share Analysis</span>
+                            </button>
+                        </div>
                                 <span>Download PDF</span>
                             </button>
                             <button
@@ -521,5 +577,212 @@ document.getElementById('exportJsonBtn').addEventListener('click', () => {
 
 // Load results on page load
 document.addEventListener('DOMContentLoaded', loadResults);
+
+// Export dropdown toggle
+document.getElementById('exportBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const menu = document.getElementById('exportMenu');
+    menu.classList.toggle('hidden');
+});
+
+// Close export menu when clicking outside
+document.addEventListener('click', () => {
+    document.getElementById('exportMenu').classList.add('hidden');
+});
+
+// Export JSON
+document.getElementById('exportJson').addEventListener('click', async (e) => {
+    e.preventDefault();
+    try {
+        const response = await fetch(`/api/v1/export/${analysisId}/json`);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `analysis-${analysisId}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        showNotification('Analysis exported as JSON', 'success');
+    } catch (error) {
+        showNotification('Failed to export JSON', 'error');
+    }
+});
+
+// Export CSV
+document.getElementById('exportCsv').addEventListener('click', async (e) => {
+    e.preventDefault();
+    try {
+        const response = await fetch(`/api/v1/export/${analysisId}/csv`);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `analysis-${analysisId}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        showNotification('Analysis exported as CSV', 'success');
+    } catch (error) {
+        showNotification('Failed to export CSV', 'error');
+    }
+});
+
+// Action Plan Modal
+document.getElementById('actionPlanBtn').addEventListener('click', async () => {
+    try {
+        const response = await fetch(`/api/v1/export/${analysisId}/action-plan`);
+        const data = await response.json();
+        
+        if (response.ok) {
+            showActionPlanModal(data);
+        } else {
+            showNotification('Action plan not available yet', 'warning');
+        }
+    } catch (error) {
+        showNotification('Failed to load action plan', 'error');
+    }
+});
+
+function showActionPlanModal(actionPlan) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">📋 30/60/90 Day Action Plan</h2>
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="prose max-w-none" id="actionPlanContent"></div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Render markdown
+    const content = document.getElementById('actionPlanContent');
+    if (typeof marked !== 'undefined' && marked.parse) {
+        content.innerHTML = marked.parse(actionPlan.roadmap || 'No action plan available');
+    } else {
+        content.innerHTML = formatTextAsHTML(actionPlan.roadmap || 'No action plan available');
+    }
+}
+
+// Share Button
+document.getElementById('shareBtn').addEventListener('click', async () => {
+    showShareModal();
+});
+
+function showShareModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg max-w-md w-full">
+            <div class="border-b px-6 py-4 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-900">🔗 Share Analysis</h2>
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Link expires in (days):
+                    </label>
+                    <input 
+                        type="number" 
+                        id="expiryDays" 
+                        value="7" 
+                        min="1" 
+                        max="30"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                </div>
+                <button 
+                    onclick="generateShareLink()" 
+                    class="w-full bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition font-semibold"
+                >
+                    Generate Share Link
+                </button>
+                <div id="shareLinkResult" class="mt-4"></div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+async function generateShareLink() {
+    const expiryDays = document.getElementById('expiryDays').value;
+    const resultDiv = document.getElementById('shareLinkResult');
+    
+    try {
+        const token = getToken();
+        const response = await fetch(`/api/v1/share/${analysisId}/share`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : ''
+            },
+            body: JSON.stringify({ expires_in_days: parseInt(expiryDays) })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            const shareUrl = `${window.location.origin}/share/${data.share_token}`;
+            resultDiv.innerHTML = `
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <p class="text-sm font-medium text-green-800 mb-2">✅ Share link created!</p>
+                    <div class="flex items-center space-x-2">
+                        <input 
+                            type="text" 
+                            value="${shareUrl}" 
+                            readonly 
+                            class="flex-1 px-3 py-2 bg-white border border-gray-300 rounded text-sm"
+                            id="shareUrlInput"
+                        >
+                        <button 
+                            onclick="copyShareLink()" 
+                            class="bg-primary text-white px-4 py-2 rounded hover:bg-secondary transition text-sm"
+                        >
+                            Copy
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-2">
+                        Expires: ${new Date(data.expires_at).toLocaleDateString()}
+                    </p>
+                </div>
+            `;
+        } else {
+            resultDiv.innerHTML = `
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p class="text-sm text-red-800">❌ ${data.detail || 'Failed to create share link'}</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        resultDiv.innerHTML = `
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p class="text-sm text-red-800">❌ Error creating share link</p>
+            </div>
+        `;
+    }
+}
+
+function copyShareLink() {
+    const input = document.getElementById('shareUrlInput');
+    input.select();
+    document.execCommand('copy');
+    showNotification('Link copied to clipboard!', 'success');
+}
 </script>
 {% endblock %}

@@ -86,6 +86,11 @@ async def perform_website_analysis(analysis_id: str, website_url: str):
         priority_recommendations = await ai_service.generate_priority_recommendations(analysis_data)
         print(f"📊 Analysis {analysis_id}: AI insights generated")
         
+        # Generate action plan
+        print(f"📊 Analysis {analysis_id}: Generating action plan...")
+        action_plan = await ai_service.generate_action_plan(analysis_data)
+        print(f"📊 Analysis {analysis_id}: Action plan generated")
+        
         # Generate PDF report
         print(f"📊 Analysis {analysis_id}: Generating PDF report...")
         pdf_url = None
@@ -129,6 +134,7 @@ async def perform_website_analysis(analysis_id: str, website_url: str):
             "content_analysis": content_result,
             "ai_summary": ai_summary,
             "priority_recommendations": priority_recommendations,
+            "action_plan": action_plan,
             "completed_at": datetime.utcnow()
         }
         
