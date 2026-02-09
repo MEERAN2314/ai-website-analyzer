@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block title %}AI Website Analyzer - Grow Your Business{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-br from-blue-50 to-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 hero-title">
+                Unlock Your Website's
+                <span class="text-primary">Full Potential</span>
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto hero-subtitle">
+                AI-powered analysis of UX, SEO, performance, and content to provide actionable recommendations for business growth
+            </p>
+            <div class="flex justify-center space-x-4">
+                <a href="/analyze" class="bg-primary text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-secondary transition transform hover:scale-105">
+                    Analyze Your Website
+                </a>
+                <a href="#how-it-works" class="bg-white text-primary border-2 border-primary px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition">
+                    Learn More
+                </a>
+            </div>
+        </div>
+        
+        <!-- Demo Preview -->
+        <div class="mt-16 demo-preview">
+            <div class="bg-white rounded-xl shadow-2xl p-8 max-w-4xl mx-auto">
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary">85</div>
+                            <div class="text-sm text-gray-600">UX Score</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-green-600">92</div>
+                            <div class="text-sm text-gray-600">SEO Score</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-yellow-600">78</div>
+                            <div class="text-sm text-gray-600">Performance</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-600">88</div>
+                            <div class="text-sm text-gray-600">Content</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works" class="py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
+            <p class="text-xl text-gray-600">Get comprehensive insights in three simple steps</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center step-card">
+                <div class="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                    1
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Enter Your URL</h3>
+                <p class="text-gray-600">Simply paste your website URL and let our AI do the rest</p>
+            </div>
+            
+            <div class="text-center step-card">
+                <div class="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                    2
+                </div>
+                <h3 class="text-xl font-semibold mb-2">AI Analysis</h3>
+                <p class="text-gray-600">Our AI analyzes UX, SEO, performance, and content quality</p>
+            </div>
+            
+            <div class="text-center step-card">
+                <div class="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                    3
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Get Recommendations</h3>
+                <p class="text-gray-600">Receive actionable insights and a detailed PDF report</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="bg-gray-50 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Powerful Features</h2>
+            <p class="text-xl text-gray-600">Everything you need to optimize your website</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-lg shadow-md feature-card">
+                <svg class="w-12 h-12 text-primary mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h3 class="text-xl font-semibold mb-2">UX Analysis</h3>
+                <p class="text-gray-600">Comprehensive user experience evaluation including mobile responsiveness and accessibility</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md feature-card">
+                <svg class="w-12 h-12 text-primary mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <h3 class="text-xl font-semibold mb-2">SEO Optimization</h3>
+                <p class="text-gray-600">In-depth SEO analysis with keyword insights and meta tag recommendations</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md feature-card">
+                <svg class="w-12 h-12 text-primary mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                <h3 class="text-xl font-semibold mb-2">Performance Metrics</h3>
+                <p class="text-gray-600">Load time analysis, Core Web Vitals, and optimization suggestions</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md feature-card">
+                <svg class="w-12 h-12 text-primary mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <h3 class="text-xl font-semibold mb-2">Content Quality</h3>
+                <p class="text-gray-600">Readability analysis, tone detection, and content improvement tips</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md feature-card">
+                <svg class="w-12 h-12 text-primary mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                </svg>
+                <h3 class="text-xl font-semibold mb-2">AI Chat Assistant</h3>
+                <p class="text-gray-600">Ask questions about your analysis and get instant AI-powered answers</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md feature-card">
+                <svg class="w-12 h-12 text-primary mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <h3 class="text-xl font-semibold mb-2">PDF Reports</h3>
+                <p class="text-gray-600">Professional, beautifully designed reports you can share with your team</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h2>
+            <p class="text-xl text-gray-600">Choose the plan that fits your needs</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Free -->
+            <div class="bg-white p-8 rounded-lg shadow-md border-2 border-gray-200 pricing-card">
+                <h3 class="text-2xl font-bold mb-2">Free</h3>
+                <div class="text-4xl font-bold text-primary mb-4">$0</div>
+                <p class="text-gray-600 mb-6">Try it out</p>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        1 analysis
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Basic report
+                    </li>
+                </ul>
+                <a href="/analyze" class="block text-center bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition">
+                    Get Started
+                </a>
+            </div>
+            
+            <!-- Basic -->
+            <div class="bg-white p-8 rounded-lg shadow-md border-2 border-gray-200 pricing-card">
+                <h3 class="text-2xl font-bold mb-2">Basic</h3>
+                <div class="text-4xl font-bold text-primary mb-4">$29<span class="text-lg text-gray-600">/mo</span></div>
+                <p class="text-gray-600 mb-6">For small businesses</p>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        10 analyses/month
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        PDF reports
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Dashboard access
+                    </li>
+                </ul>
+                <a href="/register" class="block text-center bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary transition">
+                    Choose Plan
+                </a>
+            </div>
+            
+            <!-- Pro -->
+            <div class="bg-white p-8 rounded-lg shadow-lg border-2 border-primary pricing-card transform scale-105">
+                <div class="bg-primary text-white text-sm font-semibold px-3 py-1 rounded-full inline-block mb-2">
+                    POPULAR
+                </div>
+                <h3 class="text-2xl font-bold mb-2">Pro</h3>
+                <div class="text-4xl font-bold text-primary mb-4">$99<span class="text-lg text-gray-600">/mo</span></div>
+                <p class="text-gray-600 mb-6">For growing businesses</p>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        100 analyses/month
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Unlimited AI chat
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        API access
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Priority support
+                    </li>
+                </ul>
+                <a href="/register" class="block text-center bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary transition">
+                    Choose Plan
+                </a>
+            </div>
+            
+            <!-- Enterprise -->
+            <div class="bg-white p-8 rounded-lg shadow-md border-2 border-gray-200 pricing-card">
+                <h3 class="text-2xl font-bold mb-2">Enterprise</h3>
+                <div class="text-4xl font-bold text-primary mb-4">$299<span class="text-lg text-gray-600">/mo</span></div>
+                <p class="text-gray-600 mb-6">For large organizations</p>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Unlimited analyses
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        White-label reports
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Team collaboration
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Dedicated support
+                    </li>
+                </ul>
+                <a href="/register" class="block text-center bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary transition">
+                    Contact Sales
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="bg-primary py-20">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl font-bold text-white mb-4">Ready to Optimize Your Website?</h2>
+        <p class="text-xl text-blue-100 mb-8">Start your free analysis today and discover how to grow your business</p>
+        <a href="/analyze" class="bg-white text-primary px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition inline-block">
+            Analyze Your Website Now
+        </a>
+    </div>
+</section>
+
+<script>
+// GSAP Animations
+gsap.from('.hero-title', {
+    duration: 1,
+    y: 50,
+    opacity: 0,
+    ease: 'power3.out'
+});
+
+gsap.from('.hero-subtitle', {
+    duration: 1,
+    y: 30,
+    opacity: 0,
+    delay: 0.3,
+    ease: 'power3.out'
+});
+
+gsap.from('.demo-preview', {
+    duration: 1,
+    y: 50,
+    opacity: 0,
+    delay: 0.6,
+    ease: 'power3.out'
+});
+
+gsap.from('.step-card', {
+    duration: 0.8,
+    y: 30,
+    opacity: 0,
+    stagger: 0.2,
+    scrollTrigger: {
+        trigger: '.step-card',
+        start: 'top 80%'
+    }
+});
+
+gsap.from('.feature-card', {
+    duration: 0.6,
+    y: 30,
+    opacity: 0,
+    stagger: 0.1,
+    scrollTrigger: {
+        trigger: '.feature-card',
+        start: 'top 80%'
+    }
+});
+
+gsap.from('.pricing-card', {
+    duration: 0.8,
+    y: 30,
+    opacity: 0,
+    stagger: 0.15,
+    scrollTrigger: {
+        trigger: '.pricing-card',
+        start: 'top 80%'
+    }
+});
+</script>
+{% endblock %}

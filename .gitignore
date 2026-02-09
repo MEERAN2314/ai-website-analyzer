@@ -1,0 +1,87 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite3
+
+# Redis
+dump.rdb
+
+# Docker
+*.pid
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+
+# PDF outputs
+outputs/*.pdf
+reports/*.pdf
+
+# Screenshots
+screenshots/
+
+# Google API credentials
+credentials.json
+token.json
+service-account-key.json
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Node modules (if using any frontend build tools)
+node_modules/
+
+# Static files (generated)
+static/dist/
