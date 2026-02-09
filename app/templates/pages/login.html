@@ -2,6 +2,37 @@
 
 {% block title %}Login - AI Website Analyzer{% endblock %}
 
+{% block head %}
+<style>
+    /* Dark mode overrides for login page */
+    .dark .text-gray-900 {
+        color: #f1f5f9 !important;
+    }
+    
+    .dark .text-gray-700 {
+        color: #cbd5e1 !important;
+    }
+    
+    .dark .text-gray-600 {
+        color: #94a3b8 !important;
+    }
+    
+    .dark input {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important;
+        border-color: rgba(255, 255, 255, 0.2) !important;
+    }
+    
+    .dark input::placeholder {
+        color: #64748b !important;
+    }
+    
+    .dark .shadow-sm {
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">

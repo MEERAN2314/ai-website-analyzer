@@ -1,0 +1,839 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Results - AI Website Analyzer{% endblock %}
+
+{% block head %}
+<!-- Marked.js for Markdown rendering -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+/* Dark mode overrides for results page */
+.dark .bg-gray-50 {
+    background-color: #0f172a !important;
+}
+
+.dark .bg-white {
+    background-color: #1e293b !important;
+}
+
+.dark .bg-gradient-to-br {
+    background: linear-gradient(to bottom right, #1e3a8a, #312e81) !important;
+}
+
+.dark .border-blue-100 {
+    border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+.dark .text-gray-900 {
+    color: #f1f5f9 !important;
+}
+
+.dark .text-gray-700 {
+    color: #cbd5e1 !important;
+}
+
+.dark .text-gray-600 {
+    color: #94a3b8 !important;
+}
+
+.dark .border-gray-200 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .shadow-md {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .bg-gray-50 {
+    background-color: #1e293b !important;
+}
+
+.dark input {
+    background-color: #0f172a !important;
+    color: #f1f5f9 !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.dark input::placeholder {
+    color: #64748b !important;
+}
+
+/* Prose styles for markdown content */
+.prose {
+    color: #374151;
+    max-width: 65ch;
+}
+.prose p {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    line-height: 1.75;
+}
+.prose h1, .prose h2, .prose h3, .prose h4 {
+    color: #111827;
+    font-weight: 700;
+    margin-top: 1.5em;
+    margin-bottom: 0.75em;
+}
+.prose h1 { font-size: 1.875rem; }
+.prose h2 { font-size: 1.5rem; }
+.prose h3 { font-size: 1.25rem; }
+.prose h4 { font-size: 1.125rem; }
+.prose strong {
+    color: #111827;
+    font-weight: 600;
+}
+.prose ul, .prose ol {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    padding-left: 1.625em;
+}
+.prose li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.prose ul > li {
+    padding-left: 0.375em;
+}
+.prose ul > li::marker {
+    color: #2563EB;
+}
+.prose code {
+    color: #111827;
+    font-weight: 600;
+    font-size: 0.875em;
+    background-color: #F3F4F6;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+}
+.prose blockquote {
+    font-weight: 500;
+    font-style: italic;
+    color: #111827;
+    border-left-width: 0.25rem;
+    border-left-color: #E5E7EB;
+    quotes: "\201C""\201D""\2018""\2019";
+    margin-top: 1.6em;
+    margin-bottom: 1.6em;
+    padding-left: 1em;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Loading State -->
+        <div id="loadingResults" class="text-center py-20">
+            <div class="spinner mx-auto mb-4"></div>
+            <p class="text-gray-600">Loading analysis results...</p>
+        </div>
+        
+        <!-- Results Content -->
+        <div id="resultsContent" class="hidden">
+            <!-- Header -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2" id="websiteUrl"></h1>
+                        <p class="text-gray-600">Analysis completed on <span id="completedDate"></span></p>
+                    </div>
+                    <div class="flex items-start space-x-6">
+                        <div class="text-right">
+                            <div class="text-5xl font-bold mb-2" id="overallScore"></div>
+                            <p class="text-gray-600">Overall Score</p>
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <!-- Action Plan Button -->
+                            <button
+                                id="actionPlanBtn"
+                                class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition flex items-center space-x-2 shadow-md"
+                            >
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                </svg>
+                                <span>30/60/90 Day Plan</span>
+                            </button>
+                            
+                            <!-- Download PDF Button -->
+                            <button
+                                id="downloadPdfBtn"
+                                class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition flex items-center space-x-2 shadow-md"
+                            >
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <span>Download PDF</span>
+                            </button>
+                            
+                            <!-- Export Dropdown -->
+                            <div class="relative">
+                                <button
+                                    id="exportBtn"
+                                    class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition flex items-center space-x-2 w-full shadow-md"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                                    </svg>
+                                    <span>Export</span>
+                                    <svg class="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                <div id="exportMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10">
+                                    <a href="#" id="exportJson" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
+                                        <span class="flex items-center space-x-2">
+                                            <span>📄</span>
+                                            <span>Export as JSON</span>
+                                        </span>
+                                    </a>
+                                    <a href="#" id="exportCsv" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
+                                        <span class="flex items-center space-x-2">
+                                            <span>📊</span>
+                                            <span>Export as CSV</span>
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Share Button -->
+                            <button
+                                id="shareBtn"
+                                class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition flex items-center space-x-2 shadow-md"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                                </svg>
+                                <span>Share Analysis</span>
+                            </button>
+                        </div>
+                                <span>Download PDF</span>
+                            </button>
+                            <button
+                                id="exportJsonBtn"
+                                class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition flex items-center space-x-2"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                                </svg>
+                                <span>Export JSON</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Score Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-sm text-gray-600 mb-2">UX Score</h3>
+                    <div class="text-3xl font-bold" id="uxScore">-</div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-sm text-gray-600 mb-2">SEO Score</h3>
+                    <div class="text-3xl font-bold" id="seoScore">-</div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-sm text-gray-600 mb-2">Performance</h3>
+                    <div class="text-3xl font-bold" id="perfScore">-</div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-sm text-gray-600 mb-2">Content</h3>
+                    <div class="text-3xl font-bold" id="contentScore">-</div>
+                </div>
+            </div>
+            
+            <!-- AI Summary -->
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg shadow-md p-8 mb-6 border border-blue-100">
+                <div class="flex items-center mb-4">
+                    <svg class="w-8 h-8 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                    <h2 class="text-2xl font-bold text-gray-900">AI-Powered Insights</h2>
+                </div>
+                <div id="aiSummary" class="prose prose-lg max-w-none text-gray-700 leading-relaxed"></div>
+            </div>
+            
+            <!-- Priority Recommendations -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Priority Recommendations</h2>
+                <div id="recommendations" class="space-y-4"></div>
+            </div>
+            
+            <!-- Detailed Analysis Tabs -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="border-b border-gray-200 mb-6">
+                    <nav class="-mb-px flex space-x-8">
+                        <button class="tab-btn active" data-tab="ux">UX Analysis</button>
+                        <button class="tab-btn" data-tab="seo">SEO Analysis</button>
+                        <button class="tab-btn" data-tab="performance">Performance</button>
+                        <button class="tab-btn" data-tab="content">Content</button>
+                    </nav>
+                </div>
+                
+                <div id="tabContent"></div>
+            </div>
+            
+            <!-- AI Chat -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Ask Questions About Your Analysis</h2>
+                
+                <div id="chatMessages" class="space-y-4 mb-4 max-h-96 overflow-y-auto"></div>
+                
+                <form id="chatForm" class="flex space-x-4">
+                    <input
+                        type="text"
+                        id="chatInput"
+                        placeholder="Ask anything about your website analysis..."
+                        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                    <button
+                        type="submit"
+                        class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-secondary transition"
+                    >
+                        Send
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.tab-btn {
+    padding: 1rem 0;
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+    color: #6b7280;
+    transition: all 0.3s;
+}
+
+.tab-btn.active {
+    color: #2563EB;
+    border-bottom-color: #2563EB;
+}
+
+.tab-btn:hover {
+    color: #2563EB;
+}
+</style>
+
+<script>
+const analysisId = '{{ analysis_id }}';
+let currentAnalysis = null;
+
+async function loadResults() {
+    try {
+        const response = await fetch(`/api/v1/analysis/${analysisId}`);
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.detail || 'Failed to load results');
+        }
+        
+        currentAnalysis = data;
+        
+        // Check if still processing
+        if (data.status === 'pending' || data.status === 'processing') {
+            setTimeout(loadResults, 3000); // Poll every 3 seconds
+            return;
+        }
+        
+        if (data.status === 'failed') {
+            showNotification('Analysis failed. Please try again.', 'error');
+            return;
+        }
+        
+        // Display results
+        displayResults(data);
+        
+    } catch (error) {
+        console.error('Error loading results:', error);
+        showNotification('Failed to load results', 'error');
+    }
+}
+
+function displayResults(data) {
+    console.log('Displaying results:', data);
+    
+    document.getElementById('loadingResults').classList.add('hidden');
+    document.getElementById('resultsContent').classList.remove('hidden');
+    
+    // Header
+    document.getElementById('websiteUrl').textContent = data.website_url;
+    document.getElementById('completedDate').textContent = formatDate(data.completed_at);
+    
+    // Overall score
+    const overallScoreEl = document.getElementById('overallScore');
+    overallScoreEl.textContent = data.overall_score.toFixed(0);
+    overallScoreEl.className = `text-5xl font-bold ${getScoreColor(data.overall_score)}`;
+    
+    // Individual scores
+    document.getElementById('uxScore').textContent = data.ux_analysis.score.toFixed(0);
+    document.getElementById('seoScore').textContent = data.seo_analysis.score.toFixed(0);
+    document.getElementById('perfScore').textContent = data.performance_analysis.score.toFixed(0);
+    document.getElementById('contentScore').textContent = data.content_analysis.score.toFixed(0);
+    
+    // AI Summary - render as markdown
+    const aiSummaryEl = document.getElementById('aiSummary');
+    try {
+        console.log('AI Summary:', data.ai_summary);
+        // Check if marked is available
+        if (typeof marked !== 'undefined' && marked.parse) {
+            aiSummaryEl.innerHTML = marked.parse(data.ai_summary || 'No summary available');
+        } else if (typeof marked !== 'undefined') {
+            // Fallback for older marked versions
+            aiSummaryEl.innerHTML = marked(data.ai_summary || 'No summary available');
+        } else {
+            // Fallback if marked is not loaded
+            console.warn('Marked.js not loaded, using fallback');
+            aiSummaryEl.innerHTML = formatTextAsHTML(data.ai_summary || 'No summary available');
+        }
+    } catch (error) {
+        console.error('Error rendering markdown:', error);
+        aiSummaryEl.innerHTML = formatTextAsHTML(data.ai_summary || 'No summary available');
+    }
+    
+    // Recommendations
+    console.log('Recommendations:', data.priority_recommendations);
+    const recsDiv = document.getElementById('recommendations');
+    if (data.priority_recommendations && data.priority_recommendations.length > 0) {
+        recsDiv.innerHTML = data.priority_recommendations.map(rec => `
+            <div class="border-l-4 ${getPriorityColor(rec.priority)} bg-gray-50 p-4">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-semibold text-lg">${rec.title}</h3>
+                    <span class="px-2 py-1 text-xs font-semibold rounded ${getPriorityBadge(rec.priority)}">
+                        ${rec.priority} Priority
+                    </span>
+                </div>
+                <p class="text-gray-700 mb-2">${rec.description}</p>
+                <div class="flex space-x-4 text-sm text-gray-600">
+                    <span>Impact: ${rec.impact}</span>
+                    <span>Effort: ${rec.effort}</span>
+                    <span>Category: ${rec.category}</span>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        recsDiv.innerHTML = '<p class="text-gray-600">No recommendations available</p>';
+    }
+    
+    // Setup tabs
+    setupTabs(data);
+}
+
+function setupTabs(data) {
+    const tabs = document.querySelectorAll('.tab-btn');
+    const tabContent = document.getElementById('tabContent');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            const tabName = tab.dataset.tab;
+            displayTabContent(tabName, data);
+        });
+    });
+    
+    // Show first tab
+    displayTabContent('ux', data);
+}
+
+function displayTabContent(tab, data) {
+    const tabContent = document.getElementById('tabContent');
+    const analysisData = data[`${tab}_analysis`];
+    
+    console.log(`Displaying ${tab} tab:`, analysisData);
+    
+    if (!analysisData) {
+        tabContent.innerHTML = '<p class="text-gray-600">No data available for this analysis</p>';
+        return;
+    }
+    
+    const issues = analysisData.issues || [];
+    const recommendations = analysisData.recommendations || [];
+    
+    tabContent.innerHTML = `
+        <div class="space-y-4">
+            <div>
+                <h3 class="font-semibold text-lg mb-2">Issues Found</h3>
+                ${issues.length > 0 ? `
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        ${issues.map(issue => `<li>${issue}</li>`).join('')}
+                    </ul>
+                ` : '<p class="text-gray-600">No issues found</p>'}
+            </div>
+            <div>
+                <h3 class="font-semibold text-lg mb-2">Recommendations</h3>
+                ${recommendations.length > 0 ? `
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        ${recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                    </ul>
+                ` : '<p class="text-gray-600">No recommendations available</p>'}
+            </div>
+        </div>
+    `;
+}
+
+function getPriorityColor(priority) {
+    const colors = {
+        'High': 'border-red-500',
+        'Medium': 'border-yellow-500',
+        'Low': 'border-green-500'
+    };
+    return colors[priority] || 'border-gray-500';
+}
+
+function getPriorityBadge(priority) {
+    const badges = {
+        'High': 'bg-red-100 text-red-800',
+        'Medium': 'bg-yellow-100 text-yellow-800',
+        'Low': 'bg-green-100 text-green-800'
+    };
+    return badges[priority] || 'bg-gray-100 text-gray-800';
+}
+
+// Chat functionality
+document.getElementById('chatForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Add user message
+    addChatMessage('user', message);
+    input.value = '';
+    
+    try {
+        const response = await apiRequest(`/analysis/${analysisId}/chat`, {
+            method: 'POST',
+            body: JSON.stringify({ message })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            addChatMessage('assistant', data.message);
+        } else {
+            showNotification('Failed to send message', 'error');
+        }
+    } catch (error) {
+        showNotification('An error occurred', 'error');
+    }
+});
+
+function addChatMessage(role, message) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-bubble ${role}`;
+    
+    // Render markdown for assistant messages
+    if (role === 'assistant') {
+        try {
+            if (typeof marked !== 'undefined' && marked.parse) {
+                messageDiv.innerHTML = marked.parse(message);
+            } else if (typeof marked !== 'undefined') {
+                messageDiv.innerHTML = marked(message);
+            } else {
+                messageDiv.innerHTML = formatTextAsHTML(message);
+            }
+        } catch (error) {
+            console.error('Error rendering chat markdown:', error);
+            messageDiv.innerHTML = formatTextAsHTML(message);
+        }
+    } else {
+        messageDiv.textContent = message;
+    }
+    
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Helper function to format text as HTML (fallback)
+function formatTextAsHTML(text) {
+    if (!text) return '';
+    
+    // Convert markdown-style formatting to HTML
+    return text
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^### (.+)$/gm, '<h3>$3</h3>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+}
+
+// PDF Download
+document.getElementById('downloadPdfBtn').addEventListener('click', async () => {
+    try {
+        showNotification('Generating PDF report...', 'info');
+        
+        const response = await fetch(`/api/v1/analysis/${analysisId}/pdf`);
+        const data = await response.json();
+        
+        if (response.ok && data.pdf_url) {
+            // Open PDF in new tab
+            window.open(data.pdf_url, '_blank');
+            showNotification('PDF report opened in new tab', 'success');
+        } else {
+            showNotification('PDF report not available yet. Please try again in a moment.', 'warning');
+        }
+    } catch (error) {
+        console.error('Error downloading PDF:', error);
+        showNotification('Failed to download PDF', 'error');
+    }
+});
+
+// JSON Export
+document.getElementById('exportJsonBtn').addEventListener('click', () => {
+    if (!currentAnalysis) return;
+    
+    // Create clean export data
+    const exportData = {
+        website_url: currentAnalysis.website_url,
+        analysis_date: currentAnalysis.completed_at,
+        overall_score: currentAnalysis.overall_score,
+        scores: {
+            ux: currentAnalysis.ux_analysis.score,
+            seo: currentAnalysis.seo_analysis.score,
+            performance: currentAnalysis.performance_analysis.score,
+            content: currentAnalysis.content_analysis.score
+        },
+        ai_summary: currentAnalysis.ai_summary,
+        priority_recommendations: currentAnalysis.priority_recommendations,
+        detailed_analysis: {
+            ux: currentAnalysis.ux_analysis,
+            seo: currentAnalysis.seo_analysis,
+            performance: currentAnalysis.performance_analysis,
+            content: currentAnalysis.content_analysis
+        }
+    };
+    
+    // Download as JSON
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `website-analysis-${analysisId}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showNotification('Analysis exported as JSON', 'success');
+});
+
+// Load results on page load
+document.addEventListener('DOMContentLoaded', loadResults);
+
+// Export dropdown toggle
+document.getElementById('exportBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const menu = document.getElementById('exportMenu');
+    menu.classList.toggle('hidden');
+});
+
+// Close export menu when clicking outside
+document.addEventListener('click', () => {
+    document.getElementById('exportMenu').classList.add('hidden');
+});
+
+// Export JSON
+document.getElementById('exportJson').addEventListener('click', async (e) => {
+    e.preventDefault();
+    try {
+        const response = await fetch(`/api/v1/export/${analysisId}/json`);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `analysis-${analysisId}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        showNotification('Analysis exported as JSON', 'success');
+    } catch (error) {
+        showNotification('Failed to export JSON', 'error');
+    }
+});
+
+// Export CSV
+document.getElementById('exportCsv').addEventListener('click', async (e) => {
+    e.preventDefault();
+    try {
+        const response = await fetch(`/api/v1/export/${analysisId}/csv`);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `analysis-${analysisId}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        showNotification('Analysis exported as CSV', 'success');
+    } catch (error) {
+        showNotification('Failed to export CSV', 'error');
+    }
+});
+
+// Action Plan Modal
+document.getElementById('actionPlanBtn').addEventListener('click', async () => {
+    try {
+        const response = await fetch(`/api/v1/export/${analysisId}/action-plan`);
+        const data = await response.json();
+        
+        if (response.ok) {
+            showActionPlanModal(data);
+        } else {
+            showNotification('Action plan not available yet', 'warning');
+        }
+    } catch (error) {
+        showNotification('Failed to load action plan', 'error');
+    }
+});
+
+function showActionPlanModal(actionPlan) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">📋 30/60/90 Day Action Plan</h2>
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="prose max-w-none" id="actionPlanContent"></div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Render markdown
+    const content = document.getElementById('actionPlanContent');
+    if (typeof marked !== 'undefined' && marked.parse) {
+        content.innerHTML = marked.parse(actionPlan.roadmap || 'No action plan available');
+    } else {
+        content.innerHTML = formatTextAsHTML(actionPlan.roadmap || 'No action plan available');
+    }
+}
+
+// Share Button
+document.getElementById('shareBtn').addEventListener('click', async () => {
+    showShareModal();
+});
+
+function showShareModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg max-w-md w-full">
+            <div class="border-b px-6 py-4 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-900">🔗 Share Analysis</h2>
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Link expires in (days):
+                    </label>
+                    <input 
+                        type="number" 
+                        id="expiryDays" 
+                        value="7" 
+                        min="1" 
+                        max="30"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                </div>
+                <button 
+                    onclick="generateShareLink()" 
+                    class="w-full bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition font-semibold"
+                >
+                    Generate Share Link
+                </button>
+                <div id="shareLinkResult" class="mt-4"></div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+async function generateShareLink() {
+    const expiryDays = document.getElementById('expiryDays').value;
+    const resultDiv = document.getElementById('shareLinkResult');
+    
+    try {
+        const token = getToken();
+        const response = await fetch(`/api/v1/share/${analysisId}/share`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : ''
+            },
+            body: JSON.stringify({ expires_in_days: parseInt(expiryDays) })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            const shareUrl = `${window.location.origin}/share/${data.share_token}`;
+            resultDiv.innerHTML = `
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <p class="text-sm font-medium text-green-800 mb-2">✅ Share link created!</p>
+                    <div class="flex items-center space-x-2">
+                        <input 
+                            type="text" 
+                            value="${shareUrl}" 
+                            readonly 
+                            class="flex-1 px-3 py-2 bg-white border border-gray-300 rounded text-sm"
+                            id="shareUrlInput"
+                        >
+                        <button 
+                            onclick="copyShareLink()" 
+                            class="bg-primary text-white px-4 py-2 rounded hover:bg-secondary transition text-sm"
+                        >
+                            Copy
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-2">
+                        Expires: ${new Date(data.expires_at).toLocaleDateString()}
+                    </p>
+                </div>
+            `;
+        } else {
+            resultDiv.innerHTML = `
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p class="text-sm text-red-800">❌ ${data.detail || 'Failed to create share link'}</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        resultDiv.innerHTML = `
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p class="text-sm text-red-800">❌ Error creating share link</p>
+            </div>
+        `;
+    }
+}
+
+function copyShareLink() {
+    const input = document.getElementById('shareUrlInput');
+    input.select();
+    document.execCommand('copy');
+    showNotification('Link copied to clipboard!', 'success');
+}
+</script>
+{% endblock %}

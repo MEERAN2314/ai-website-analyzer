@@ -20,6 +20,7 @@
     
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -33,6 +34,119 @@
     </script>
     
     <style>
+        /* Dark Mode Transitions */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* Dark Mode Toggle Button */
+        .theme-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .theme-toggle:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .theme-toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .theme-toggle.dark .theme-toggle-slider {
+            left: 33px;
+            background: #1e293b;
+        }
+        
+        .theme-toggle.dark {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+        }
+        
+        /* Dark Mode Styles */
+        .dark {
+            color-scheme: dark;
+        }
+        
+        .dark body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+        
+        .dark .navbar {
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark .nav-link {
+            color: #cbd5e1;
+        }
+        
+        .dark .nav-link:hover {
+            color: #60a5fa;
+        }
+        
+        .dark .mobile-menu {
+            background: #1e293b;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark .bg-white {
+            background-color: #1e293b !important;
+        }
+        
+        .dark .bg-gray-50 {
+            background-color: #0f172a !important;
+        }
+        
+        .dark .bg-gray-100 {
+            background-color: #1e293b !important;
+        }
+        
+        .dark .text-gray-900 {
+            color: #f1f5f9 !important;
+        }
+        
+        .dark .text-gray-700 {
+            color: #cbd5e1 !important;
+        }
+        
+        .dark .text-gray-600 {
+            color: #94a3b8 !important;
+        }
+        
+        .dark .border-gray-200 {
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        .dark .shadow-md,
+        .dark .shadow-lg {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        .dark footer {
+            background-color: #020617;
+        }
+        
+        .dark .card-hover:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+        }
         /* Enhanced Navbar Styles */
         .navbar {
             backdrop-filter: blur(10px);
@@ -175,6 +289,18 @@
                     <a href="/dashboard" class="nav-link text-gray-700 hover:text-primary font-medium">Dashboard</a>
                     <a href="/#pricing" class="nav-link text-gray-700 hover:text-primary font-medium">Pricing</a>
                     
+                    <!-- Dark Mode Toggle -->
+                    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                        <div class="theme-toggle-slider">
+                            <svg id="theme-icon-sun" class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <svg id="theme-icon-moon" class="w-4 h-4 text-blue-300 hidden" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                            </svg>
+                        </div>
+                    </button>
+                    
                     <div id="auth-buttons" class="flex items-center space-x-4">
                         <a href="/login" class="nav-link text-gray-700 hover:text-primary font-medium">Login</a>
                         <a href="/register" class="btn-primary bg-gradient-to-r from-primary to-accent text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
@@ -201,7 +327,16 @@
                 </div>
                 
                 <!-- Mobile Menu Button -->
-                <div class="md:hidden flex items-center">
+                <div class="md:hidden flex items-center space-x-3">
+                    <!-- Mobile Dark Mode Toggle -->
+                    <button id="theme-toggle-mobile" class="theme-toggle" style="width: 50px; height: 25px;" aria-label="Toggle dark mode">
+                        <div class="theme-toggle-slider" style="width: 19px; height: 19px; top: 3px; left: 3px;">
+                            <svg class="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </button>
+                    
                     <button id="mobile-menu-btn" class="text-gray-700 hover:text-primary transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -280,6 +415,86 @@
     <script src="/static/js/main.js"></script>
     
     <script>
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+        const html = document.documentElement;
+        const sunIcon = document.getElementById('theme-icon-sun');
+        const moonIcon = document.getElementById('theme-icon-moon');
+        
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        
+        // Apply saved theme on page load
+        if (currentTheme === 'dark') {
+            html.classList.add('dark');
+            themeToggle.classList.add('dark');
+            themeToggleMobile.classList.add('dark');
+            sunIcon.classList.add('hidden');
+            moonIcon.classList.remove('hidden');
+        }
+        
+        // Toggle theme function
+        function toggleTheme() {
+            html.classList.toggle('dark');
+            themeToggle.classList.toggle('dark');
+            themeToggleMobile.classList.toggle('dark');
+            
+            if (html.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                
+                // Show notification
+                showThemeNotification('🌙 Dark mode enabled');
+            } else {
+                localStorage.setItem('theme', 'light');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                
+                // Show notification
+                showThemeNotification('☀️ Light mode enabled');
+            }
+        }
+        
+        // Show theme change notification
+        function showThemeNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300';
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(20px)';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateY(0)';
+            }, 10);
+            
+            // Remove after 2 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 2000);
+        }
+        
+        // Add click event listeners
+        themeToggle.addEventListener('click', toggleTheme);
+        themeToggleMobile.addEventListener('click', toggleTheme);
+        
+        // Keyboard shortcut: Ctrl/Cmd + Shift + D
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        });
+        
         // Navbar scroll effect
         window.addEventListener('scroll', () => {
             const navbar = document.querySelector('.navbar');

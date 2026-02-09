@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Mode Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        .theme-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+        
+        .theme-toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .theme-toggle.dark .theme-toggle-slider {
+            left: 33px;
+            background: #1e293b;
+        }
+        
+        .theme-toggle.dark {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-slate-900 min-h-screen transition-colors duration-300">
+    <div class="max-w-4xl mx-auto p-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+                🌓 Dark Mode Test
+            </h1>
+            
+            <!-- Theme Toggle -->
+            <button id="theme-toggle" class="theme-toggle">
+                <div class="theme-toggle-slider">
+                    <svg id="sun-icon" class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                    </svg>
+                    <svg id="moon-icon" class="w-4 h-4 text-blue-300 hidden" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                </div>
+            </button>
+        </div>
+        
+        <!-- Test Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    Card Title
+                </h2>
+                <p class="text-gray-600 dark:text-gray-300">
+                    This is a test card to demonstrate dark mode styling. Notice how the colors transition smoothly!
+                </p>
+            </div>
+            
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    Another Card
+                </h2>
+                <p class="text-gray-600 dark:text-gray-300">
+                    All elements should be readable in both light and dark modes with proper contrast.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Feature List -->
+        <div class="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-md mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                ✨ Features
+            </h2>
+            <ul class="space-y-3">
+                <li class="flex items-center text-gray-700 dark:text-gray-300">
+                    <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Smooth transitions between themes
+                </li>
+                <li class="flex items-center text-gray-700 dark:text-gray-300">
+                    <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Persistent theme preference
+                </li>
+                <li class="flex items-center text-gray-700 dark:text-gray-300">
+                    <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Keyboard shortcut (Ctrl/Cmd + Shift + D)
+                </li>
+                <li class="flex items-center text-gray-700 dark:text-gray-300">
+                    <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Beautiful toggle animation
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Buttons -->
+        <div class="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                🎨 Button Styles
+            </h2>
+            <div class="flex flex-wrap gap-4">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition">
+                    Primary Button
+                </button>
+                <button class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white px-6 py-2 rounded-lg transition">
+                    Secondary Button
+                </button>
+                <button class="border-2 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-900 dark:text-white px-6 py-2 rounded-lg transition">
+                    Outline Button
+                </button>
+            </div>
+        </div>
+        
+        <!-- Instructions -->
+        <div class="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <h3 class="text-lg font-bold text-blue-900 dark:text-blue-300 mb-2">
+                💡 How to Test
+            </h3>
+            <ul class="text-blue-800 dark:text-blue-200 space-y-1">
+                <li>• Click the toggle button in the top right</li>
+                <li>• Or press <kbd class="px-2 py-1 bg-white dark:bg-slate-700 rounded border">Ctrl/Cmd + Shift + D</kbd></li>
+                <li>• Refresh the page - your preference is saved!</li>
+                <li>• Check all elements for readability</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        const toggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            html.classList.add('dark');
+            toggle.classList.add('dark');
+            sunIcon.classList.add('hidden');
+            moonIcon.classList.remove('hidden');
+        }
+        
+        // Toggle function
+        function toggleTheme() {
+            html.classList.toggle('dark');
+            toggle.classList.toggle('dark');
+            
+            if (html.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                showNotification('🌙 Dark mode enabled');
+            } else {
+                localStorage.setItem('theme', 'light');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                showNotification('☀️ Light mode enabled');
+            }
+        }
+        
+        // Notification
+        function showNotification(message) {
+            const notif = document.createElement('div');
+            notif.className = 'fixed bottom-4 right-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-6 py-3 rounded-lg shadow-lg z-50';
+            notif.textContent = message;
+            notif.style.opacity = '0';
+            notif.style.transform = 'translateY(20px)';
+            notif.style.transition = 'all 0.3s ease';
+            
+            document.body.appendChild(notif);
+            
+            setTimeout(() => {
+                notif.style.opacity = '1';
+                notif.style.transform = 'translateY(0)';
+            }, 10);
+            
+            setTimeout(() => {
+                notif.style.opacity = '0';
+                notif.style.transform = 'translateY(20px)';
+                setTimeout(() => document.body.removeChild(notif), 300);
+            }, 2000);
+        }
+        
+        // Event listeners
+        toggle.addEventListener('click', toggleTheme);
+        
+        // Keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        });
+    </script>
+</body>
+</html>
