@@ -2,6 +2,31 @@
 
 {% block title %}Dashboard - AI Website Analyzer{% endblock %}
 
+{% block head %}
+<style>
+    /* Dark mode overrides for dashboard */
+    .dark .bg-gray-50 {
+        background-color: #0f172a !important;
+    }
+    
+    .dark .bg-white {
+        background-color: #1e293b !important;
+    }
+    
+    .dark .text-gray-900 {
+        color: #f1f5f9 !important;
+    }
+    
+    .dark .text-gray-600 {
+        color: #94a3b8 !important;
+    }
+    
+    .dark .shadow {
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

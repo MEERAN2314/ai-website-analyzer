@@ -6,6 +6,113 @@
 <!-- Marked.js for Markdown rendering -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
+/* Dark mode overrides for results page */
+.dark .bg-gray-50 {
+    background-color: #0f172a !important;
+}
+
+.dark .bg-white {
+    background-color: #1e293b !important;
+}
+
+.dark .bg-gradient-to-br.from-blue-50 {
+    background: linear-gradient(to bottom right, #1e3a8a, #312e81) !important;
+}
+
+.dark .bg-gradient-to-br.from-primary {
+    background: linear-gradient(to bottom right, #1e3a8a, #312e81) !important;
+}
+
+.dark .border-blue-100 {
+    border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+.dark .text-gray-900 {
+    color: #f1f5f9 !important;
+}
+
+.dark .text-gray-700 {
+    color: #cbd5e1 !important;
+}
+
+.dark .text-gray-600 {
+    color: #94a3b8 !important;
+}
+
+.dark .text-gray-500 {
+    color: #64748b !important;
+}
+
+.dark .border-gray-200 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .shadow-md {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark input {
+    background-color: #0f172a !important;
+    color: #f1f5f9 !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.dark input::placeholder {
+    color: #64748b !important;
+}
+
+.dark .bg-blue-100 {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+}
+
+.dark .bg-green-100 {
+    background-color: rgba(16, 185, 129, 0.2) !important;
+}
+
+.dark .bg-yellow-100 {
+    background-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+.dark .bg-purple-100 {
+    background-color: rgba(168, 85, 247, 0.2) !important;
+}
+
+.dark .bg-orange-50 {
+    background-color: rgba(249, 115, 22, 0.1) !important;
+}
+
+.dark .bg-green-50 {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+}
+
+.dark .border-red-200 {
+    border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+.dark .bg-red-50 {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+.dark .text-red-800 {
+    color: #fca5a5 !important;
+}
+
+.dark .bg-green-50 {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+}
+
+.dark .border-green-200 {
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+.dark .text-green-800 {
+    color: #86efac !important;
+}
+
 /* Prose styles for markdown content */
 .prose {
     color: #374151;
@@ -72,173 +179,251 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Loading State -->
         <div id="loadingResults" class="text-center py-20">
-            <div class="spinner mx-auto mb-4"></div>
-            <p class="text-gray-600">Loading analysis results...</p>
+            <div class="spinner mx-auto mb-6" style="width: 64px; height: 64px; border-width: 4px;"></div>
+            <p class="text-gray-600 text-lg font-medium mb-2">Loading analysis results...</p>
+            <p class="text-gray-500 text-sm">This may take a few moments</p>
         </div>
         
         <!-- Results Content -->
         <div id="resultsContent" class="hidden">
-            <!-- Header -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <div class="flex justify-between items-start">
-                    <div class="flex-1">
-                        <h1 class="text-3xl font-bold text-gray-900 mb-2" id="websiteUrl"></h1>
-                        <p class="text-gray-600">Analysis completed on <span id="completedDate"></span></p>
-                    </div>
-                    <div class="flex items-start space-x-6">
-                        <div class="text-right">
-                            <div class="text-5xl font-bold mb-2" id="overallScore"></div>
-                            <p class="text-gray-600">Overall Score</p>
+            <!-- Hero Header with Large Score -->
+            <div class="bg-gradient-to-br from-primary to-secondary rounded-2xl shadow-lg p-8 mb-6 text-white">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div class="flex-1 text-center md:text-left">
+                        <div class="inline-block bg-white/20 backdrop-blur-md px-4 py-2 rounded-full mb-4">
+                            <span class="text-sm font-semibold">✓ Analysis Complete</span>
                         </div>
-                        <div class="flex flex-col space-y-2">
-                            <!-- Action Plan Button -->
-                            <button
-                                id="actionPlanBtn"
-                                class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition flex items-center space-x-2 shadow-md"
-                            >
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                                </svg>
-                                <span>30/60/90 Day Plan</span>
-                            </button>
-                            
-                            <!-- Download PDF Button -->
-                            <button
-                                id="downloadPdfBtn"
-                                class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition flex items-center space-x-2 shadow-md"
-                            >
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                                <span>Download PDF</span>
-                            </button>
-                            
-                            <!-- Export Dropdown -->
-                            <div class="relative">
-                                <button
-                                    id="exportBtn"
-                                    class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition flex items-center space-x-2 w-full shadow-md"
-                                >
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
-                                    </svg>
-                                    <span>Export</span>
-                                    <svg class="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                    </svg>
-                                </button>
-                                <div id="exportMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-10">
-                                    <a href="#" id="exportJson" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
-                                        <span class="flex items-center space-x-2">
-                                            <span>📄</span>
-                                            <span>Export as JSON</span>
-                                        </span>
-                                    </a>
-                                    <a href="#" id="exportCsv" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
-                                        <span class="flex items-center space-x-2">
-                                            <span>📊</span>
-                                            <span>Export as CSV</span>
-                                        </span>
-                                    </a>
-                                </div>
+                        <h1 class="text-3xl md:text-4xl font-bold mb-2" id="websiteUrl"></h1>
+                        <p class="text-white/90 flex items-center justify-center md:justify-start">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <span id="completedDate"></span>
+                        </p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="relative">
+                            <div class="w-36 h-36 rounded-full bg-white/20 backdrop-blur-md flex flex-col items-center justify-center border-4 border-white/30">
+                                <div class="text-5xl font-bold" id="overallScore"></div>
+                                <p class="text-sm font-medium mt-1">Overall Score</p>
                             </div>
-                            
-                            <!-- Share Button -->
-                            <button
-                                id="shareBtn"
-                                class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition flex items-center space-x-2 shadow-md"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
-                                </svg>
-                                <span>Share Analysis</span>
-                            </button>
-                        </div>
-                                <span>Download PDF</span>
-                            </button>
-                            <button
-                                id="exportJsonBtn"
-                                class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition flex items-center space-x-2"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
-                                </svg>
-                                <span>Export JSON</span>
-                            </button>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Score Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-sm text-gray-600 mb-2">UX Score</h3>
-                    <div class="text-3xl font-bold" id="uxScore">-</div>
+            <!-- Action Buttons Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <!-- Action Plan Button -->
+                <button
+                    id="actionPlanBtn"
+                    class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-105 shadow-md flex flex-col items-center space-y-2"
+                >
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    <span class="font-semibold text-center">Action Plan</span>
+                    <span class="text-xs opacity-90">30/60/90 Days</span>
+                </button>
+                
+                <!-- Download PDF Button -->
+                <button
+                    id="downloadPdfBtn"
+                    class="bg-red-600 text-white p-6 rounded-xl hover:bg-red-700 transition transform hover:scale-105 shadow-md flex flex-col items-center space-y-2"
+                >
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span class="font-semibold text-center">PDF Report</span>
+                    <span class="text-xs opacity-90">Download</span>
+                </button>
+                
+                <!-- Export Button -->
+                <div class="relative">
+                    <button
+                        id="exportBtn"
+                        class="w-full bg-gray-700 text-white p-6 rounded-xl hover:bg-gray-800 transition transform hover:scale-105 shadow-md flex flex-col items-center space-y-2"
+                    >
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                        </svg>
+                        <span class="font-semibold text-center">Export Data</span>
+                        <span class="text-xs opacity-90">JSON/CSV</span>
+                    </button>
+                    <div id="exportMenu" class="hidden absolute left-0 mt-2 w-full bg-white rounded-lg shadow-lg py-2 z-10">
+                        <a href="#" id="exportJson" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
+                            <span class="flex items-center space-x-2">
+                                <span>📄</span>
+                                <span>Export as JSON</span>
+                            </span>
+                        </a>
+                        <a href="#" id="exportCsv" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition">
+                            <span class="flex items-center space-x-2">
+                                <span>📊</span>
+                                <span>Export as CSV</span>
+                            </span>
+                        </a>
+                    </div>
                 </div>
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-sm text-gray-600 mb-2">SEO Score</h3>
-                    <div class="text-3xl font-bold" id="seoScore">-</div>
+                
+                <!-- Share Button -->
+                <button
+                    id="shareBtn"
+                    class="bg-green-600 text-white p-6 rounded-xl hover:bg-green-700 transition transform hover:scale-105 shadow-md flex flex-col items-center space-y-2"
+                >
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                    </svg>
+                    <span class="font-semibold text-center">Share</span>
+                    <span class="text-xs opacity-90">Create Link</span>
+                </button>
+            </div>
+            
+            <!-- Score Cards with Icons and Colors -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500 transform hover:scale-105 transition">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-sm text-gray-600 mb-2 font-medium">UX Score</h3>
+                    <div class="text-3xl font-bold text-blue-600" id="uxScore">-</div>
                 </div>
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-sm text-gray-600 mb-2">Performance</h3>
-                    <div class="text-3xl font-bold" id="perfScore">-</div>
+                <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500 transform hover:scale-105 transition">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-sm text-gray-600 mb-2 font-medium">SEO Score</h3>
+                    <div class="text-3xl font-bold text-green-600" id="seoScore">-</div>
                 </div>
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-sm text-gray-600 mb-2">Content</h3>
-                    <div class="text-3xl font-bold" id="contentScore">-</div>
+                <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-500 transform hover:scale-105 transition">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-sm text-gray-600 mb-2 font-medium">Performance</h3>
+                    <div class="text-3xl font-bold text-yellow-600" id="perfScore">-</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-purple-500 transform hover:scale-105 transition">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-sm text-gray-600 mb-2 font-medium">Content</h3>
+                    <div class="text-3xl font-bold text-purple-600" id="contentScore">-</div>
                 </div>
             </div>
             
-            <!-- AI Summary -->
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg shadow-md p-8 mb-6 border border-blue-100">
-                <div class="flex items-center mb-4">
-                    <svg class="w-8 h-8 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                    </svg>
-                    <h2 class="text-2xl font-bold text-gray-900">AI-Powered Insights</h2>
+            <!-- AI Summary with Enhanced Design -->
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-md p-8 mb-6 border border-blue-100">
+                <div class="flex items-start mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mr-4 flex-shrink-0 shadow-md">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-1">AI-Powered Insights</h2>
+                        <p class="text-sm text-gray-600">Comprehensive analysis powered by Google Gemini</p>
+                    </div>
                 </div>
                 <div id="aiSummary" class="prose prose-lg max-w-none text-gray-700 leading-relaxed"></div>
             </div>
             
-            <!-- Priority Recommendations -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Priority Recommendations</h2>
+            <!-- Priority Recommendations with Enhanced Design -->
+            <div class="bg-white rounded-2xl shadow-md p-8 mb-6">
+                <div class="flex items-start mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center mr-4 flex-shrink-0 shadow-md">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-1">Priority Recommendations</h2>
+                        <p class="text-sm text-gray-600">Key actions to improve your website</p>
+                    </div>
+                </div>
                 <div id="recommendations" class="space-y-4"></div>
             </div>
             
-            <!-- Detailed Analysis Tabs -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <!-- Detailed Analysis Tabs with Icons -->
+            <div class="bg-white rounded-2xl shadow-md p-8 mb-6">
                 <div class="border-b border-gray-200 mb-6">
                     <nav class="-mb-px flex space-x-8">
-                        <button class="tab-btn active" data-tab="ux">UX Analysis</button>
-                        <button class="tab-btn" data-tab="seo">SEO Analysis</button>
-                        <button class="tab-btn" data-tab="performance">Performance</button>
-                        <button class="tab-btn" data-tab="content">Content</button>
+                        <button class="tab-btn active" data-tab="ux">
+                            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                            </svg>
+                            UX Analysis
+                        </button>
+                        <button class="tab-btn" data-tab="seo">
+                            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            SEO Analysis
+                        </button>
+                        <button class="tab-btn" data-tab="performance">
+                            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            Performance
+                        </button>
+                        <button class="tab-btn" data-tab="content">
+                            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Content
+                        </button>
                     </nav>
                 </div>
                 
                 <div id="tabContent"></div>
             </div>
             
-            <!-- AI Chat -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Ask Questions About Your Analysis</h2>
+            <!-- AI Chat with Enhanced Design -->
+            <div class="bg-white rounded-2xl shadow-md p-8">
+                <div class="flex items-start mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center mr-4 flex-shrink-0 shadow-md">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-1">Ask AI About Your Analysis</h2>
+                        <p class="text-sm text-gray-600">Get personalized answers and recommendations</p>
+                    </div>
+                </div>
                 
-                <div id="chatMessages" class="space-y-4 mb-4 max-h-96 overflow-y-auto"></div>
+                <div id="chatMessages" class="space-y-4 mb-6 max-h-96 overflow-y-auto"></div>
                 
                 <form id="chatForm" class="flex space-x-4">
                     <input
                         type="text"
                         id="chatInput"
                         placeholder="Ask anything about your website analysis..."
-                        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        class="flex-1 px-6 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                     >
                     <button
                         type="submit"
-                        class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-secondary transition"
+                        class="bg-primary text-white px-8 py-4 rounded-xl hover:bg-secondary transition transform hover:scale-105 flex items-center space-x-2"
                     >
-                        Send
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        <span>Send</span>
                     </button>
                 </form>
             </div>
@@ -249,10 +434,12 @@
 <style>
 .tab-btn {
     padding: 1rem 0;
-    border-bottom: 2px solid transparent;
+    border-bottom: 3px solid transparent;
     font-weight: 500;
     color: #6b7280;
     transition: all 0.3s;
+    display: flex;
+    align-items: center;
 }
 
 .tab-btn.active {
@@ -263,16 +450,80 @@
 .tab-btn:hover {
     color: #2563EB;
 }
+
+.tab-btn svg {
+    transition: transform 0.3s;
+}
+
+.tab-btn:hover svg {
+    transform: scale(1.1);
+}
 </style>
 
 <script>
 const analysisId = '{{ analysis_id }}';
 let currentAnalysis = null;
 
+// Helper functions
+function getToken() {
+    return localStorage.getItem('access_token');
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function getScoreColor(score) {
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-yellow-600';
+    if (score >= 40) return 'text-orange-600';
+    return 'text-red-600';
+}
+
+function showNotification(message, type = 'info') {
+    const colors = {
+        'info': 'bg-blue-500',
+        'success': 'bg-green-500',
+        'error': 'bg-red-500',
+        'warning': 'bg-yellow-500'
+    };
+    
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-4 right-4 ${colors[type] || colors.info} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300`;
+    notification.style.opacity = '0';
+    notification.style.transform = 'translateY(20px)';
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateY(0)';
+    }, 10);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(20px)';
+        setTimeout(() => document.body.removeChild(notification), 300);
+    }, 3000);
+}
+
 async function loadResults() {
     try {
+        console.log('Loading results for analysis:', analysisId);
         const response = await fetch(`/api/v1/analysis/${analysisId}`);
         const data = await response.json();
+        
+        console.log('Response status:', response.status);
+        console.log('Response data:', data);
         
         if (!response.ok) {
             throw new Error(data.detail || 'Failed to load results');
@@ -282,21 +533,46 @@ async function loadResults() {
         
         // Check if still processing
         if (data.status === 'pending' || data.status === 'processing') {
+            console.log('Analysis still processing, will retry in 3 seconds');
             setTimeout(loadResults, 3000); // Poll every 3 seconds
             return;
         }
         
         if (data.status === 'failed') {
+            console.error('Analysis failed:', data.error_message);
             showNotification('Analysis failed. Please try again.', 'error');
+            document.getElementById('loadingResults').innerHTML = `
+                <div class="text-center py-20">
+                    <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="text-gray-600">Analysis failed. Please try again.</p>
+                    <a href="/analyze" class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-lg hover:bg-secondary transition">
+                        Try Again
+                    </a>
+                </div>
+            `;
             return;
         }
         
         // Display results
+        console.log('Displaying results');
         displayResults(data);
         
     } catch (error) {
         console.error('Error loading results:', error);
-        showNotification('Failed to load results', 'error');
+        showNotification('Failed to load results: ' + error.message, 'error');
+        document.getElementById('loadingResults').innerHTML = `
+            <div class="text-center py-20">
+                <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-gray-600">Error: ${error.message}</p>
+                <a href="/analyze" class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-lg hover:bg-secondary transition">
+                    Try Again
+                </a>
+            </div>
+        `;
     }
 }
 
@@ -441,36 +717,7 @@ function getPriorityBadge(priority) {
     return badges[priority] || 'bg-gray-100 text-gray-800';
 }
 
-// Chat functionality
-document.getElementById('chatForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const input = document.getElementById('chatInput');
-    const message = input.value.trim();
-    
-    if (!message) return;
-    
-    // Add user message
-    addChatMessage('user', message);
-    input.value = '';
-    
-    try {
-        const response = await apiRequest(`/analysis/${analysisId}/chat`, {
-            method: 'POST',
-            body: JSON.stringify({ message })
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-            addChatMessage('assistant', data.message);
-        } else {
-            showNotification('Failed to send message', 'error');
-        }
-    } catch (error) {
-        showNotification('An error occurred', 'error');
-    }
-});
+// Chat functionality moved to setupEventListeners()
 
 function addChatMessage(role, message) {
     const chatMessages = document.getElementById('chatMessages');
@@ -515,136 +762,168 @@ function formatTextAsHTML(text) {
         .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
 }
 
-// PDF Download
-document.getElementById('downloadPdfBtn').addEventListener('click', async () => {
-    try {
-        showNotification('Generating PDF report...', 'info');
-        
-        const response = await fetch(`/api/v1/analysis/${analysisId}/pdf`);
-        const data = await response.json();
-        
-        if (response.ok && data.pdf_url) {
-            // Open PDF in new tab
-            window.open(data.pdf_url, '_blank');
-            showNotification('PDF report opened in new tab', 'success');
-        } else {
-            showNotification('PDF report not available yet. Please try again in a moment.', 'warning');
-        }
-    } catch (error) {
-        console.error('Error downloading PDF:', error);
-        showNotification('Failed to download PDF', 'error');
-    }
-});
-
-// JSON Export
-document.getElementById('exportJsonBtn').addEventListener('click', () => {
-    if (!currentAnalysis) return;
-    
-    // Create clean export data
-    const exportData = {
-        website_url: currentAnalysis.website_url,
-        analysis_date: currentAnalysis.completed_at,
-        overall_score: currentAnalysis.overall_score,
-        scores: {
-            ux: currentAnalysis.ux_analysis.score,
-            seo: currentAnalysis.seo_analysis.score,
-            performance: currentAnalysis.performance_analysis.score,
-            content: currentAnalysis.content_analysis.score
-        },
-        ai_summary: currentAnalysis.ai_summary,
-        priority_recommendations: currentAnalysis.priority_recommendations,
-        detailed_analysis: {
-            ux: currentAnalysis.ux_analysis,
-            seo: currentAnalysis.seo_analysis,
-            performance: currentAnalysis.performance_analysis,
-            content: currentAnalysis.content_analysis
-        }
-    };
-    
-    // Download as JSON
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `website-analysis-${analysisId}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    showNotification('Analysis exported as JSON', 'success');
-});
+// PDF Download moved to setupEventListeners()
 
 // Load results on page load
-document.addEventListener('DOMContentLoaded', loadResults);
-
-// Export dropdown toggle
-document.getElementById('exportBtn').addEventListener('click', (e) => {
-    e.stopPropagation();
-    const menu = document.getElementById('exportMenu');
-    menu.classList.toggle('hidden');
+document.addEventListener('DOMContentLoaded', () => {
+    loadResults();
+    
+    // Setup event listeners after DOM is loaded
+    setupEventListeners();
 });
 
-// Close export menu when clicking outside
-document.addEventListener('click', () => {
-    document.getElementById('exportMenu').classList.add('hidden');
-});
-
-// Export JSON
-document.getElementById('exportJson').addEventListener('click', async (e) => {
-    e.preventDefault();
-    try {
-        const response = await fetch(`/api/v1/export/${analysisId}/json`);
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `analysis-${analysisId}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-        showNotification('Analysis exported as JSON', 'success');
-    } catch (error) {
-        showNotification('Failed to export JSON', 'error');
+function setupEventListeners() {
+    // PDF Download
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    if (downloadPdfBtn) {
+        downloadPdfBtn.addEventListener('click', async () => {
+            try {
+                showNotification('Generating PDF report...', 'info');
+                
+                const response = await fetch(`/api/v1/analysis/${analysisId}/pdf`);
+                const data = await response.json();
+                
+                if (response.ok && data.pdf_url) {
+                    window.open(data.pdf_url, '_blank');
+                    showNotification('PDF report opened in new tab', 'success');
+                } else {
+                    showNotification('PDF report not available yet. Please try again in a moment.', 'warning');
+                }
+            } catch (error) {
+                console.error('Error downloading PDF:', error);
+                showNotification('Failed to download PDF', 'error');
+            }
+        });
     }
-});
-
-// Export CSV
-document.getElementById('exportCsv').addEventListener('click', async (e) => {
-    e.preventDefault();
-    try {
-        const response = await fetch(`/api/v1/export/${analysisId}/csv`);
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `analysis-${analysisId}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-        showNotification('Analysis exported as CSV', 'success');
-    } catch (error) {
-        showNotification('Failed to export CSV', 'error');
-    }
-});
-
-// Action Plan Modal
-document.getElementById('actionPlanBtn').addEventListener('click', async () => {
-    try {
-        const response = await fetch(`/api/v1/export/${analysisId}/action-plan`);
-        const data = await response.json();
+    
+    // Export dropdown toggle
+    const exportBtn = document.getElementById('exportBtn');
+    const exportMenu = document.getElementById('exportMenu');
+    if (exportBtn && exportMenu) {
+        exportBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            exportMenu.classList.toggle('hidden');
+        });
         
-        if (response.ok) {
-            showActionPlanModal(data);
-        } else {
-            showNotification('Action plan not available yet', 'warning');
-        }
-    } catch (error) {
-        showNotification('Failed to load action plan', 'error');
+        // Close export menu when clicking outside
+        document.addEventListener('click', () => {
+            exportMenu.classList.add('hidden');
+        });
     }
-});
+    
+    // Export JSON
+    const exportJson = document.getElementById('exportJson');
+    if (exportJson) {
+        exportJson.addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                const response = await fetch(`/api/v1/export/${analysisId}/json`);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `analysis-${analysisId}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                showNotification('Analysis exported as JSON', 'success');
+            } catch (error) {
+                showNotification('Failed to export JSON', 'error');
+            }
+        });
+    }
+    
+    // Export CSV
+    const exportCsv = document.getElementById('exportCsv');
+    if (exportCsv) {
+        exportCsv.addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                const response = await fetch(`/api/v1/export/${analysisId}/csv`);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `analysis-${analysisId}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                showNotification('Analysis exported as CSV', 'success');
+            } catch (error) {
+                showNotification('Failed to export CSV', 'error');
+            }
+        });
+    }
+    
+    // Action Plan Modal
+    const actionPlanBtn = document.getElementById('actionPlanBtn');
+    if (actionPlanBtn) {
+        actionPlanBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`/api/v1/export/${analysisId}/action-plan`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showActionPlanModal(data);
+                } else {
+                    showNotification('Action plan not available yet', 'warning');
+                }
+            } catch (error) {
+                showNotification('Failed to load action plan', 'error');
+            }
+        });
+    }
+    
+    // Share Button
+    const shareBtn = document.getElementById('shareBtn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', async () => {
+            showShareModal();
+        });
+    }
+    
+    // Chat Form
+    const chatForm = document.getElementById('chatForm');
+    if (chatForm) {
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addChatMessage('user', message);
+            input.value = '';
+            
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/v1/analysis/${analysisId}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    },
+                    body: JSON.stringify({ message })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addChatMessage('assistant', data.message);
+                } else {
+                    showNotification('Failed to send message', 'error');
+                }
+            } catch (error) {
+                showNotification('An error occurred', 'error');
+            }
+        });
+    }
+}
+
+// Old duplicate event listeners removed - now handled in setupEventListeners()
 
 function showActionPlanModal(actionPlan) {
     const modal = document.createElement('div');
@@ -675,10 +954,7 @@ function showActionPlanModal(actionPlan) {
     }
 }
 
-// Share Button
-document.getElementById('shareBtn').addEventListener('click', async () => {
-    showShareModal();
-});
+// Share Button moved to setupEventListeners()
 
 function showShareModal() {
     const modal = document.createElement('div');

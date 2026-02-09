@@ -60,6 +60,7 @@ A professional, production-ready AI-powered tool that analyzes website UX, SEO, 
 - **Analysis History**: View all past analyses
 - **Usage Tracking**: Monitor plan limits
 - **Email Notifications**: Analysis completion alerts
+- **Dark Mode Toggle**: Beautiful light/dark theme switcher ⭐ NEW
 
 ### Business Features
 - **Freemium Model**: 1 free analysis for guests
