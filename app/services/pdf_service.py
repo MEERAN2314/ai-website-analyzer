@@ -8,6 +8,8 @@ from reportlab.pdfgen import canvas
 from datetime import datetime
 from typing import Dict
 import os
+import re
+import html
 
 
 class PDFService:
@@ -62,6 +64,45 @@ class PDFService:
         
         canvas.restoreState()
     
+    def _sanitize_text(self, text: str) -> str:
+        """Sanitize text for PDF - remove problematic HTML, links, and emojis"""
+        if not text:
+            return ""
+        
+        # Remove HTML anchor tags with href attributes (especially #anchors)
+        text = re.sub(r'<a\s+[^>]*href=["\']#[^"\']*["\'][^>]*>(.*?)</a>', r'\1', text, flags=re.IGNORECASE)
+        text = re.sub(r'<a\s+[^>]*href=["\'][^"\']*["\'][^>]*>(.*?)</a>', r'\1', text, flags=re.IGNORECASE)
+        
+        # Remove other problematic HTML tags but keep content
+        text = re.sub(r'<script[^>]*>.*?</script>', '', text, flags=re.IGNORECASE | re.DOTALL)
+        text = re.sub(r'<style[^>]*>.*?</style>', '', text, flags=re.IGNORECASE | re.DOTALL)
+        
+        # Remove emojis (Unicode emoji ranges)
+        emoji_pattern = re.compile(
+            "["
+            "\U0001F600-\U0001F64F"  # emoticons
+            "\U0001F300-\U0001F5FF"  # symbols & pictographs
+            "\U0001F680-\U0001F6FF"  # transport & map symbols
+            "\U0001F1E0-\U0001F1FF"  # flags (iOS)
+            "\U00002702-\U000027B0"  # dingbats
+            "\U000024C2-\U0001F251"  # enclosed characters
+            "\U0001F900-\U0001F9FF"  # supplemental symbols
+            "\U0001FA00-\U0001FA6F"  # chess symbols
+            "\U00002600-\U000026FF"  # misc symbols
+            "\U00002700-\U000027BF"  # dingbats
+            "]+",
+            flags=re.UNICODE
+        )
+        text = emoji_pattern.sub('', text)
+        
+        # Escape special characters for XML/HTML
+        text = html.escape(text, quote=False)
+        
+        # Remove any remaining anchor references
+        text = text.replace('href="#', 'href="')
+        text = re.sub(r'href="#[^"]*"', '', text)
+        
+        return text.strip()
     async def generate_report(self, analysis_data: Dict) -> str:
         """Generate PDF report from analysis data"""
         try:
@@ -247,11 +288,18 @@ class PDFService:
                 ('ROUNDEDCORNERS', [10, 10, 10, 10])
             ]))
             
-            elements.append(breakdown_table)
+            # Center the breakdown table
+            breakdown_wrapper = Table([[breakdown_table]], colWidths=[A4[0] - 100])
+            breakdown_wrapper.setStyle(TableStyle([
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
+            ]))
+            
+            elements.append(breakdown_wrapper)
             elements.append(Spacer(1, 0.4*inch))
             
             # Executive Summary
-            elements.append(Paragraph("📊 Executive Summary", heading_style))
+            elements.append(Paragraph("Executive Summary", heading_style))
             elements.append(HRFlowable(width="100%", thickness=2, color=self.colors['primary_light'], spaceBefore=5, spaceAfter=15))
             
             summary_text = analysis_data.get('ai_summary', 'No summary available')
@@ -259,13 +307,15 @@ class PDFService:
             
             for para in summary_text.split('\n\n'):
                 if para.strip():
-                    elements.append(Paragraph(para.strip(), normal_style))
+                    # Sanitize each paragraph
+                    sanitized_para = self._sanitize_text(para.strip())
+                    elements.append(Paragraph(sanitized_para, normal_style))
                     elements.append(Spacer(1, 0.12*inch))
             
             elements.append(Spacer(1, 0.25*inch))
             
             # Priority Recommendations
-            elements.append(Paragraph("🎯 Priority Recommendations", heading_style))
+            elements.append(Paragraph("Priority Recommendations", heading_style))
             elements.append(HRFlowable(width="100%", thickness=2, color=self.colors['primary_light'], spaceBefore=5, spaceAfter=15))
             
             recommendations = analysis_data.get('priority_recommendations', [])
@@ -279,10 +329,14 @@ class PDFService:
                     }
                     border_color, bg_color = priority_colors.get(rec.get('priority', 'N/A'), (self.colors['gray_medium'], self.colors['gray_light']))
                     
+                    # Sanitize recommendation text
+                    rec_title = self._sanitize_text(str(rec.get("title", "")))
+                    rec_desc = self._sanitize_text(str(rec.get('description', '')))
+                    
                     rec_content = [
-                        [Paragraph(f'<b>{i}. {rec.get("title", "")}</b>', 
+                        [Paragraph(f'<b>{i}. {rec_title}</b>', 
                                   ParagraphStyle('RecTitle', fontSize=13, textColor=self.colors['secondary'], fontName='Helvetica-Bold'))],
-                        [Paragraph(rec.get('description', ''), normal_style)],
+                        [Paragraph(rec_desc, normal_style)],
                         [Paragraph(f'<font size="9" color="#6B7280"><b>Priority:</b> {rec.get("priority", "N/A")} | <b>Impact:</b> {rec.get("impact", "N/A")} | <b>Effort:</b> {rec.get("effort", "N/A")}</font>', 
                                   ParagraphStyle('RecMeta'))]
                     ]
@@ -305,40 +359,65 @@ class PDFService:
             
             # Detailed Analysis Sections
             sections = [
-                ('🎨 UX Analysis', 'ux_analysis', self.colors['primary'], self.colors['bg_blue']),
-                ('🔍 SEO Analysis', 'seo_analysis', self.colors['success'], self.colors['bg_green']),
-                ('⚡ Performance Analysis', 'performance_analysis', self.colors['warning'], self.colors['bg_yellow']),
-                ('📝 Content Analysis', 'content_analysis', self.colors['danger'], self.colors['bg_red'])
+                ('UX Analysis', 'ux_analysis', self.colors['primary'], self.colors['bg_blue']),
+                ('SEO Analysis', 'seo_analysis', self.colors['success'], self.colors['bg_green']),
+                ('Performance Analysis', 'performance_analysis', self.colors['warning'], self.colors['bg_yellow']),
+                ('Content Analysis', 'content_analysis', self.colors['danger'], self.colors['bg_red'])
             ]
             
             for section_title, section_key, section_color, section_bg in sections:
                 section_data = analysis_data.get(section_key, {})
                 score = section_data.get('score', 0)
                 
-                elements.append(Paragraph(section_title, ParagraphStyle('SectionHeading', parent=heading_style, textColor=section_color)))
-                elements.append(HRFlowable(width="100%", thickness=2, color=section_color, spaceBefore=5, spaceAfter=10))
-                elements.append(Paragraph(f'<b>Score: <font color="{self._get_score_color(score)}">{score:.0f}/100</font></b>', 
-                                        ParagraphStyle('ScoreBadge', fontSize=12, textColor=self.colors['gray_dark'])))
-                elements.append(Spacer(1, 0.15*inch))
+                # Create section content as a group to keep together
+                section_elements = []
                 
-                elements.append(Paragraph("<b>⚠️ Issues Found:</b>", subheading_style))
+                section_elements.append(Paragraph(section_title, ParagraphStyle('SectionHeading', parent=heading_style, textColor=section_color)))
+                section_elements.append(HRFlowable(width="100%", thickness=2, color=section_color, spaceBefore=5, spaceAfter=10))
+                section_elements.append(Paragraph(f'<b>Score: <font color="{self._get_score_color(score)}">{score:.0f}/100</font></b>', 
+                                        ParagraphStyle('ScoreBadge', fontSize=12, textColor=self.colors['gray_dark'])))
+                section_elements.append(Spacer(1, 0.15*inch))
+                
+                # Issues section
+                issues_elements = []
+                issues_elements.append(Paragraph("<b>Issues Found:</b>", subheading_style))
                 issues = section_data.get('issues', [])
                 if issues:
                     for issue in issues[:10]:
-                        elements.append(Paragraph(f'• {issue}', bullet_style))
+                        # Sanitize issue text to remove problematic HTML/links
+                        sanitized_issue = self._sanitize_text(str(issue))
+                        issues_elements.append(Paragraph(f'• {sanitized_issue}', bullet_style))
                 else:
-                    elements.append(Paragraph("✓ No issues found", 
+                    issues_elements.append(Paragraph("No issues found", 
                                             ParagraphStyle('NoIssues', parent=normal_style, textColor=self.colors['success'])))
                 
-                elements.append(Spacer(1, 0.18*inch))
-                elements.append(Paragraph("<b>💡 Recommendations:</b>", subheading_style))
+                # Keep issues heading with at least first 2 items
+                section_elements.append(KeepTogether(issues_elements[:min(3, len(issues_elements))]))
+                if len(issues_elements) > 3:
+                    section_elements.extend(issues_elements[3:])
+                
+                section_elements.append(Spacer(1, 0.18*inch))
+                
+                # Recommendations section
+                recs_elements = []
+                recs_elements.append(Paragraph("<b>Recommendations:</b>", subheading_style))
                 
                 recs = section_data.get('recommendations', [])
                 if recs:
                     for rec in recs[:10]:
-                        elements.append(Paragraph(f'• {rec}', bullet_style))
+                        # Sanitize recommendation text to remove problematic HTML/links
+                        sanitized_rec = self._sanitize_text(str(rec))
+                        recs_elements.append(Paragraph(f'• {sanitized_rec}', bullet_style))
                 else:
-                    elements.append(Paragraph("No recommendations", normal_style))
+                    recs_elements.append(Paragraph("No recommendations", normal_style))
+                
+                # Keep recommendations heading with at least first 2 items
+                section_elements.append(KeepTogether(recs_elements[:min(3, len(recs_elements))]))
+                if len(recs_elements) > 3:
+                    section_elements.extend(recs_elements[3:])
+                
+                # Add all section elements
+                elements.extend(section_elements)
                 
                 elements.append(Spacer(1, 0.35*inch))
             

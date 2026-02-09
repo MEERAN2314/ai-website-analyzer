@@ -6,6 +6,19 @@
 <!-- Marked.js for Markdown rendering -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
+/* Spinner animation */
+.spinner {
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #2563EB;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* Dark mode overrides for results page */
 .dark .bg-gray-50 {
     background-color: #0f172a !important;
@@ -778,20 +791,56 @@ function setupEventListeners() {
     if (downloadPdfBtn) {
         downloadPdfBtn.addEventListener('click', async () => {
             try {
+                // Disable button and show loading state
+                downloadPdfBtn.disabled = true;
+                downloadPdfBtn.innerHTML = `
+                    <div class="spinner mx-auto mb-2" style="width: 24px; height: 24px; border-width: 2px;"></div>
+                    <span class="font-semibold text-center">Generating...</span>
+                    <span class="text-xs opacity-90">Please wait</span>
+                `;
+                
                 showNotification('Generating PDF report...', 'info');
                 
                 const response = await fetch(`/api/v1/analysis/${analysisId}/pdf`);
                 const data = await response.json();
                 
                 if (response.ok && data.pdf_url) {
-                    window.open(data.pdf_url, '_blank');
-                    showNotification('PDF report opened in new tab', 'success');
+                    // Open PDF in new tab
+                    const pdfWindow = window.open(data.pdf_url, '_blank');
+                    
+                    if (pdfWindow) {
+                        showNotification('PDF report opened in new tab', 'success');
+                    } else {
+                        // If popup blocked, provide download link
+                        showNotification('Please allow popups or click here to download', 'warning');
+                        setTimeout(() => {
+                            window.location.href = data.pdf_url;
+                        }, 1000);
+                    }
+                } else if (response.status === 400) {
+                    showNotification(data.detail || 'Analysis not complete yet. Please wait.', 'warning');
+                } else if (response.status === 404) {
+                    showNotification(data.detail || 'PDF not found. Generating now...', 'warning');
+                    // Retry after a short delay
+                    setTimeout(() => {
+                        downloadPdfBtn.click();
+                    }, 2000);
                 } else {
-                    showNotification('PDF report not available yet. Please try again in a moment.', 'warning');
+                    showNotification(data.detail || 'Failed to generate PDF report', 'error');
                 }
             } catch (error) {
                 console.error('Error downloading PDF:', error);
-                showNotification('Failed to download PDF', 'error');
+                showNotification('Failed to download PDF: ' + error.message, 'error');
+            } finally {
+                // Restore button state
+                downloadPdfBtn.disabled = false;
+                downloadPdfBtn.innerHTML = `
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span class="font-semibold text-center">PDF Report</span>
+                    <span class="text-xs opacity-90">Download</span>
+                `;
             }
         });
     }

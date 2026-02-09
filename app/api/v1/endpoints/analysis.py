@@ -183,7 +183,8 @@ async def download_pdf(analysis_id: str):
     
     try:
         analysis = await db.analyses.find_one({"_id": ObjectId(analysis_id)})
-    except:
+    except Exception as e:
+        print(f"❌ Error finding analysis: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid analysis ID"
@@ -195,10 +196,66 @@ async def download_pdf(analysis_id: str):
             detail="Analysis not found"
         )
     
-    if not analysis.get("pdf_url"):
+    # Check if analysis is complete
+    if analysis.get("status") != "completed":
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="PDF not generated yet"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Analysis is {analysis.get('status', 'pending')}. Please wait for completion."
         )
     
-    return {"pdf_url": analysis["pdf_url"]}
+    # Check if PDF exists
+    pdf_url = analysis.get("pdf_url")
+    if not pdf_url:
+        # Try to generate PDF if it doesn't exist
+        print(f"📄 PDF not found for analysis {analysis_id}, attempting to generate...")
+        try:
+            from app.services.pdf_service import PDFService
+            pdf_service = PDFService()
+            
+            # Prepare data for PDF
+            pdf_data = {
+                'id': analysis_id,
+                'website_url': analysis.get('website_url'),
+                'overall_score': analysis.get('overall_score', 0),
+                'ux_analysis': analysis.get('ux_analysis', {}),
+                'seo_analysis': analysis.get('seo_analysis', {}),
+                'performance_analysis': analysis.get('performance_analysis', {}),
+                'content_analysis': analysis.get('content_analysis', {}),
+                'ai_summary': analysis.get('ai_summary', 'No summary available'),
+                'priority_recommendations': analysis.get('priority_recommendations', [])
+            }
+            
+            # Generate PDF
+            pdf_path = await pdf_service.generate_report(pdf_data)
+            pdf_filename = f"analysis_{analysis_id}.pdf"
+            pdf_url = f"/static/pdfs/{pdf_filename}"
+            
+            # Update database with PDF URL
+            await db.analyses.update_one(
+                {"_id": ObjectId(analysis_id)},
+                {"$set": {"pdf_url": pdf_url}}
+            )
+            
+            print(f"✅ PDF generated successfully: {pdf_url}")
+            
+        except Exception as e:
+            print(f"❌ Failed to generate PDF: {e}")
+            import traceback
+            traceback.print_exc()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to generate PDF report"
+            )
+    
+    # Verify PDF file exists
+    import os
+    pdf_file_path = f"app{pdf_url}"
+    if not os.path.exists(pdf_file_path):
+        print(f"⚠️ PDF file not found at: {pdf_file_path}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="PDF file not found on server"
+        )
+    
+    print(f"✅ Returning PDF URL: {pdf_url}")
+    return {"pdf_url": pdf_url, "status": "ready"}
