@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status
 from datetime import datetime, timedelta
+from bson import ObjectId
 from app.core.config import settings
 
 
@@ -18,14 +19,14 @@ async def check_rate_limit(user_id: str, plan: str, db):
     
     if user_id:
         # Get user's monthly count
-        user = await db.users.find_one({"_id": user_id})
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
         if user:
             monthly_reset_date = user.get("monthly_reset_date")
             
             # Reset if needed
             if not monthly_reset_date or monthly_reset_date < datetime.utcnow():
                 await db.users.update_one(
-                    {"_id": user_id},
+                    {"_id": ObjectId(user_id)},
                     {
                         "$set": {
                             "monthly_analyses_count": 0,
@@ -46,7 +47,7 @@ async def check_rate_limit(user_id: str, plan: str, db):
             
             # Increment count
             await db.users.update_one(
-                {"_id": user_id},
+                {"_id": ObjectId(user_id)},
                 {"$inc": {"monthly_analyses_count": 1, "analyses_count": 1}}
             )
     else:

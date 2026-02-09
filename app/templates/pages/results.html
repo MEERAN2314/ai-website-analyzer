@@ -2,6 +2,71 @@
 
 {% block title %}Analysis Results - AI Website Analyzer{% endblock %}
 
+{% block head %}
+<!-- Marked.js for Markdown rendering -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+/* Prose styles for markdown content */
+.prose {
+    color: #374151;
+    max-width: 65ch;
+}
+.prose p {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    line-height: 1.75;
+}
+.prose h1, .prose h2, .prose h3, .prose h4 {
+    color: #111827;
+    font-weight: 700;
+    margin-top: 1.5em;
+    margin-bottom: 0.75em;
+}
+.prose h1 { font-size: 1.875rem; }
+.prose h2 { font-size: 1.5rem; }
+.prose h3 { font-size: 1.25rem; }
+.prose h4 { font-size: 1.125rem; }
+.prose strong {
+    color: #111827;
+    font-weight: 600;
+}
+.prose ul, .prose ol {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    padding-left: 1.625em;
+}
+.prose li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.prose ul > li {
+    padding-left: 0.375em;
+}
+.prose ul > li::marker {
+    color: #2563EB;
+}
+.prose code {
+    color: #111827;
+    font-weight: 600;
+    font-size: 0.875em;
+    background-color: #F3F4F6;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+}
+.prose blockquote {
+    font-weight: 500;
+    font-style: italic;
+    color: #111827;
+    border-left-width: 0.25rem;
+    border-left-color: #E5E7EB;
+    quotes: "\201C""\201D""\2018""\2019";
+    margin-top: 1.6em;
+    margin-bottom: 1.6em;
+    padding-left: 1em;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -16,13 +81,35 @@
             <!-- Header -->
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
                 <div class="flex justify-between items-start">
-                    <div>
+                    <div class="flex-1">
                         <h1 class="text-3xl font-bold text-gray-900 mb-2" id="websiteUrl"></h1>
                         <p class="text-gray-600">Analysis completed on <span id="completedDate"></span></p>
                     </div>
-                    <div class="text-right">
-                        <div class="text-5xl font-bold mb-2" id="overallScore"></div>
-                        <p class="text-gray-600">Overall Score</p>
+                    <div class="flex items-start space-x-6">
+                        <div class="text-right">
+                            <div class="text-5xl font-bold mb-2" id="overallScore"></div>
+                            <p class="text-gray-600">Overall Score</p>
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <button
+                                id="downloadPdfBtn"
+                                class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition flex items-center space-x-2"
+                            >
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <span>Download PDF</span>
+                            </button>
+                            <button
+                                id="exportJsonBtn"
+                                class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition flex items-center space-x-2"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                                </svg>
+                                <span>Export JSON</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -48,9 +135,14 @@
             </div>
             
             <!-- AI Summary -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">AI Summary</h2>
-                <div id="aiSummary" class="text-gray-700 leading-relaxed"></div>
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg shadow-md p-8 mb-6 border border-blue-100">
+                <div class="flex items-center mb-4">
+                    <svg class="w-8 h-8 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                    <h2 class="text-2xl font-bold text-gray-900">AI-Powered Insights</h2>
+                </div>
+                <div id="aiSummary" class="prose prose-lg max-w-none text-gray-700 leading-relaxed"></div>
             </div>
             
             <!-- Priority Recommendations -->
@@ -153,6 +245,8 @@ async function loadResults() {
 }
 
 function displayResults(data) {
+    console.log('Displaying results:', data);
+    
     document.getElementById('loadingResults').classList.add('hidden');
     document.getElementById('resultsContent').classList.remove('hidden');
     
@@ -171,27 +265,49 @@ function displayResults(data) {
     document.getElementById('perfScore').textContent = data.performance_analysis.score.toFixed(0);
     document.getElementById('contentScore').textContent = data.content_analysis.score.toFixed(0);
     
-    // AI Summary
-    document.getElementById('aiSummary').textContent = data.ai_summary;
+    // AI Summary - render as markdown
+    const aiSummaryEl = document.getElementById('aiSummary');
+    try {
+        console.log('AI Summary:', data.ai_summary);
+        // Check if marked is available
+        if (typeof marked !== 'undefined' && marked.parse) {
+            aiSummaryEl.innerHTML = marked.parse(data.ai_summary || 'No summary available');
+        } else if (typeof marked !== 'undefined') {
+            // Fallback for older marked versions
+            aiSummaryEl.innerHTML = marked(data.ai_summary || 'No summary available');
+        } else {
+            // Fallback if marked is not loaded
+            console.warn('Marked.js not loaded, using fallback');
+            aiSummaryEl.innerHTML = formatTextAsHTML(data.ai_summary || 'No summary available');
+        }
+    } catch (error) {
+        console.error('Error rendering markdown:', error);
+        aiSummaryEl.innerHTML = formatTextAsHTML(data.ai_summary || 'No summary available');
+    }
     
     // Recommendations
+    console.log('Recommendations:', data.priority_recommendations);
     const recsDiv = document.getElementById('recommendations');
-    recsDiv.innerHTML = data.priority_recommendations.map(rec => `
-        <div class="border-l-4 ${getPriorityColor(rec.priority)} bg-gray-50 p-4">
-            <div class="flex justify-between items-start mb-2">
-                <h3 class="font-semibold text-lg">${rec.title}</h3>
-                <span class="px-2 py-1 text-xs font-semibold rounded ${getPriorityBadge(rec.priority)}">
-                    ${rec.priority} Priority
-                </span>
+    if (data.priority_recommendations && data.priority_recommendations.length > 0) {
+        recsDiv.innerHTML = data.priority_recommendations.map(rec => `
+            <div class="border-l-4 ${getPriorityColor(rec.priority)} bg-gray-50 p-4">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-semibold text-lg">${rec.title}</h3>
+                    <span class="px-2 py-1 text-xs font-semibold rounded ${getPriorityBadge(rec.priority)}">
+                        ${rec.priority} Priority
+                    </span>
+                </div>
+                <p class="text-gray-700 mb-2">${rec.description}</p>
+                <div class="flex space-x-4 text-sm text-gray-600">
+                    <span>Impact: ${rec.impact}</span>
+                    <span>Effort: ${rec.effort}</span>
+                    <span>Category: ${rec.category}</span>
+                </div>
             </div>
-            <p class="text-gray-700 mb-2">${rec.description}</p>
-            <div class="flex space-x-4 text-sm text-gray-600">
-                <span>Impact: ${rec.impact}</span>
-                <span>Effort: ${rec.effort}</span>
-                <span>Category: ${rec.category}</span>
-            </div>
-        </div>
-    `).join('');
+        `).join('');
+    } else {
+        recsDiv.innerHTML = '<p class="text-gray-600">No recommendations available</p>';
+    }
     
     // Setup tabs
     setupTabs(data);
@@ -219,19 +335,33 @@ function displayTabContent(tab, data) {
     const tabContent = document.getElementById('tabContent');
     const analysisData = data[`${tab}_analysis`];
     
+    console.log(`Displaying ${tab} tab:`, analysisData);
+    
+    if (!analysisData) {
+        tabContent.innerHTML = '<p class="text-gray-600">No data available for this analysis</p>';
+        return;
+    }
+    
+    const issues = analysisData.issues || [];
+    const recommendations = analysisData.recommendations || [];
+    
     tabContent.innerHTML = `
         <div class="space-y-4">
             <div>
                 <h3 class="font-semibold text-lg mb-2">Issues Found</h3>
-                <ul class="list-disc list-inside space-y-1 text-gray-700">
-                    ${analysisData.issues.map(issue => `<li>${issue}</li>`).join('')}
-                </ul>
+                ${issues.length > 0 ? `
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        ${issues.map(issue => `<li>${issue}</li>`).join('')}
+                    </ul>
+                ` : '<p class="text-gray-600">No issues found</p>'}
             </div>
             <div>
                 <h3 class="font-semibold text-lg mb-2">Recommendations</h3>
-                <ul class="list-disc list-inside space-y-1 text-gray-700">
-                    ${analysisData.recommendations.map(rec => `<li>${rec}</li>`).join('')}
-                </ul>
+                ${recommendations.length > 0 ? `
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        ${recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                    </ul>
+                ` : '<p class="text-gray-600">No recommendations available</p>'}
             </div>
         </div>
     `;
@@ -290,10 +420,104 @@ function addChatMessage(role, message) {
     const chatMessages = document.getElementById('chatMessages');
     const messageDiv = document.createElement('div');
     messageDiv.className = `chat-bubble ${role}`;
-    messageDiv.textContent = message;
+    
+    // Render markdown for assistant messages
+    if (role === 'assistant') {
+        try {
+            if (typeof marked !== 'undefined' && marked.parse) {
+                messageDiv.innerHTML = marked.parse(message);
+            } else if (typeof marked !== 'undefined') {
+                messageDiv.innerHTML = marked(message);
+            } else {
+                messageDiv.innerHTML = formatTextAsHTML(message);
+            }
+        } catch (error) {
+            console.error('Error rendering chat markdown:', error);
+            messageDiv.innerHTML = formatTextAsHTML(message);
+        }
+    } else {
+        messageDiv.textContent = message;
+    }
+    
     chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
+
+// Helper function to format text as HTML (fallback)
+function formatTextAsHTML(text) {
+    if (!text) return '';
+    
+    // Convert markdown-style formatting to HTML
+    return text
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^### (.+)$/gm, '<h3>$3</h3>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+}
+
+// PDF Download
+document.getElementById('downloadPdfBtn').addEventListener('click', async () => {
+    try {
+        showNotification('Generating PDF report...', 'info');
+        
+        const response = await fetch(`/api/v1/analysis/${analysisId}/pdf`);
+        const data = await response.json();
+        
+        if (response.ok && data.pdf_url) {
+            // Open PDF in new tab
+            window.open(data.pdf_url, '_blank');
+            showNotification('PDF report opened in new tab', 'success');
+        } else {
+            showNotification('PDF report not available yet. Please try again in a moment.', 'warning');
+        }
+    } catch (error) {
+        console.error('Error downloading PDF:', error);
+        showNotification('Failed to download PDF', 'error');
+    }
+});
+
+// JSON Export
+document.getElementById('exportJsonBtn').addEventListener('click', () => {
+    if (!currentAnalysis) return;
+    
+    // Create clean export data
+    const exportData = {
+        website_url: currentAnalysis.website_url,
+        analysis_date: currentAnalysis.completed_at,
+        overall_score: currentAnalysis.overall_score,
+        scores: {
+            ux: currentAnalysis.ux_analysis.score,
+            seo: currentAnalysis.seo_analysis.score,
+            performance: currentAnalysis.performance_analysis.score,
+            content: currentAnalysis.content_analysis.score
+        },
+        ai_summary: currentAnalysis.ai_summary,
+        priority_recommendations: currentAnalysis.priority_recommendations,
+        detailed_analysis: {
+            ux: currentAnalysis.ux_analysis,
+            seo: currentAnalysis.seo_analysis,
+            performance: currentAnalysis.performance_analysis,
+            content: currentAnalysis.content_analysis
+        }
+    };
+    
+    // Download as JSON
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `website-analysis-${analysisId}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showNotification('Analysis exported as JSON', 'success');
+});
 
 // Load results on page load
 document.addEventListener('DOMContentLoaded', loadResults);

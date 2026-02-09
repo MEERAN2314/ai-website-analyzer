@@ -1,5 +1,9 @@
-from weasyprint import HTML, CSS
-from jinja2 import Template
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether
+from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
 from datetime import datetime
 from typing import Dict
 import os
@@ -9,7 +13,7 @@ class PDFService:
     """Service for generating PDF reports"""
     
     def __init__(self):
-        self.output_dir = "outputs"
+        self.output_dir = "app/static/pdfs"
         os.makedirs(self.output_dir, exist_ok=True)
     
     async def generate_report(self, analysis_data: Dict) -> str:
@@ -22,300 +26,207 @@ class PDFService:
         Returns:
             Path to generated PDF file
         """
-        # Create HTML content
-        html_content = self._create_html_report(analysis_data)
-        
-        # Generate PDF
-        filename = f"analysis_{analysis_data['id']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
-        output_path = os.path.join(self.output_dir, filename)
-        
-        HTML(string=html_content).write_pdf(
-            output_path,
-            stylesheets=[CSS(string=self._get_pdf_styles())]
-        )
-        
-        return output_path
-    
-    def _create_html_report(self, data: Dict) -> str:
-        """Create HTML content for PDF report"""
-        
-        template_str = """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Website Analysis Report</title>
-        </head>
-        <body>
-            <div class="header">
-                <h1>Website Analysis Report</h1>
-                <p class="subtitle">{{ website_url }}</p>
-                <p class="date">Generated on {{ date }}</p>
-            </div>
+        try:
+            # Generate PDF filename
+            filename = f"analysis_{analysis_data['id']}.pdf"
+            output_path = os.path.join(self.output_dir, filename)
             
-            <div class="summary-box">
-                <h2>Overall Score</h2>
-                <div class="score-circle">{{ overall_score }}</div>
-            </div>
+            print(f"📄 Creating PDF at: {output_path}")
             
-            <div class="scores-grid">
-                <div class="score-card">
-                    <h3>UX Score</h3>
-                    <div class="score">{{ ux_score }}</div>
-                </div>
-                <div class="score-card">
-                    <h3>SEO Score</h3>
-                    <div class="score">{{ seo_score }}</div>
-                </div>
-                <div class="score-card">
-                    <h3>Performance</h3>
-                    <div class="score">{{ perf_score }}</div>
-                </div>
-                <div class="score-card">
-                    <h3>Content</h3>
-                    <div class="score">{{ content_score }}</div>
-                </div>
-            </div>
+            # Create PDF document
+            doc = SimpleDocTemplate(
+                output_path,
+                pagesize=A4,
+                rightMargin=50,
+                leftMargin=50,
+                topMargin=50,
+                bottomMargin=30
+            )
             
-            <div class="section">
-                <h2>Executive Summary</h2>
-                <p>{{ ai_summary }}</p>
-            </div>
+            # Container for the 'Flowable' objects
+            elements = []
             
-            <div class="section">
-                <h2>Priority Recommendations</h2>
-                {% for rec in recommendations %}
-                <div class="recommendation">
-                    <h3>{{ rec.title }}</h3>
-                    <p><strong>Priority:</strong> {{ rec.priority }} | 
-                       <strong>Impact:</strong> {{ rec.impact }} | 
-                       <strong>Effort:</strong> {{ rec.effort }}</p>
-                    <p>{{ rec.description }}</p>
-                </div>
-                {% endfor %}
-            </div>
+            # Define styles
+            styles = getSampleStyleSheet()
             
-            <div class="section">
-                <h2>UX Analysis</h2>
-                <h3>Issues</h3>
-                <ul>
-                    {% for issue in ux_issues %}
-                    <li>{{ issue }}</li>
-                    {% endfor %}
-                </ul>
-                <h3>Recommendations</h3>
-                <ul>
-                    {% for rec in ux_recommendations %}
-                    <li>{{ rec }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+            # Custom styles
+            title_style = ParagraphStyle(
+                'CustomTitle',
+                parent=styles['Heading1'],
+                fontSize=24,
+                textColor=colors.HexColor('#2563EB'),
+                spaceAfter=20,
+                alignment=TA_CENTER,
+                fontName='Helvetica-Bold'
+            )
             
-            <div class="section">
-                <h2>SEO Analysis</h2>
-                <h3>Issues</h3>
-                <ul>
-                    {% for issue in seo_issues %}
-                    <li>{{ issue }}</li>
-                    {% endfor %}
-                </ul>
-                <h3>Recommendations</h3>
-                <ul>
-                    {% for rec in seo_recommendations %}
-                    <li>{{ rec }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+            heading_style = ParagraphStyle(
+                'CustomHeading',
+                parent=styles['Heading2'],
+                fontSize=16,
+                textColor=colors.HexColor('#2563EB'),
+                spaceAfter=12,
+                spaceBefore=12,
+                fontName='Helvetica-Bold'
+            )
             
-            <div class="section">
-                <h2>Performance Analysis</h2>
-                <h3>Issues</h3>
-                <ul>
-                    {% for issue in perf_issues %}
-                    <li>{{ issue }}</li>
-                    {% endfor %}
-                </ul>
-                <h3>Recommendations</h3>
-                <ul>
-                    {% for rec in perf_recommendations %}
-                    <li>{{ rec }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+            subheading_style = ParagraphStyle(
+                'CustomSubHeading',
+                parent=styles['Heading3'],
+                fontSize=12,
+                textColor=colors.HexColor('#374151'),
+                spaceAfter=8,
+                spaceBefore=8,
+                fontName='Helvetica-Bold'
+            )
             
-            <div class="section">
-                <h2>Content Analysis</h2>
-                <h3>Issues</h3>
-                <ul>
-                    {% for issue in content_issues %}
-                    <li>{{ issue }}</li>
-                    {% endfor %}
-                </ul>
-                <h3>Recommendations</h3>
-                <ul>
-                    {% for rec in content_recommendations %}
-                    <li>{{ rec }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+            normal_style = ParagraphStyle(
+                'CustomNormal',
+                parent=styles['Normal'],
+                fontSize=10,
+                leading=14,
+                alignment=TA_LEFT
+            )
             
-            <div class="footer">
-                <p>Generated by AI Website Analyzer</p>
-                <p>© 2026 WebAnalyzer AI. All rights reserved.</p>
-            </div>
-        </body>
-        </html>
-        """
-        
-        template = Template(template_str)
-        
-        return template.render(
-            website_url=data.get('website_url', ''),
-            date=datetime.now().strftime('%B %d, %Y'),
-            overall_score=f"{data.get('overall_score', 0):.0f}",
-            ux_score=f"{data.get('ux_analysis', {}).get('score', 0):.0f}",
-            seo_score=f"{data.get('seo_analysis', {}).get('score', 0):.0f}",
-            perf_score=f"{data.get('performance_analysis', {}).get('score', 0):.0f}",
-            content_score=f"{data.get('content_analysis', {}).get('score', 0):.0f}",
-            ai_summary=data.get('ai_summary', ''),
-            recommendations=data.get('priority_recommendations', []),
-            ux_issues=data.get('ux_analysis', {}).get('issues', []),
-            ux_recommendations=data.get('ux_analysis', {}).get('recommendations', []),
-            seo_issues=data.get('seo_analysis', {}).get('issues', []),
-            seo_recommendations=data.get('seo_analysis', {}).get('recommendations', []),
-            perf_issues=data.get('performance_analysis', {}).get('issues', []),
-            perf_recommendations=data.get('performance_analysis', {}).get('recommendations', []),
-            content_issues=data.get('content_analysis', {}).get('issues', []),
-            content_recommendations=data.get('content_analysis', {}).get('recommendations', [])
-        )
-    
-    def _get_pdf_styles(self) -> str:
-        """Get CSS styles for PDF"""
-        return """
-        @page {
-            size: A4;
-            margin: 2cm;
-        }
-        
-        body {
-            font-family: 'Helvetica', 'Arial', sans-serif;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #2563EB;
-        }
-        
-        .header h1 {
-            color: #2563EB;
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            font-size: 18px;
-            color: #666;
-            margin: 5px 0;
-        }
-        
-        .date {
-            font-size: 14px;
-            color: #999;
-        }
-        
-        .summary-box {
-            background: linear-gradient(135deg, #2563EB, #3B82F6);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 30px 0;
-        }
-        
-        .score-circle {
-            font-size: 72px;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-        
-        .scores-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin: 30px 0;
-        }
-        
-        .score-card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            border: 2px solid #e5e7eb;
-        }
-        
-        .score-card h3 {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-        
-        .score-card .score {
-            font-size: 36px;
-            font-weight: bold;
-            color: #2563EB;
-        }
-        
-        .section {
-            margin: 30px 0;
-            page-break-inside: avoid;
-        }
-        
-        .section h2 {
-            color: #2563EB;
-            font-size: 24px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        
-        .section h3 {
-            color: #333;
-            font-size: 18px;
-            margin: 15px 0 10px 0;
-        }
-        
-        .recommendation {
-            background: #f8f9fa;
-            padding: 15px;
-            margin: 15px 0;
-            border-left: 4px solid #2563EB;
-            border-radius: 4px;
-        }
-        
-        .recommendation h3 {
-            color: #2563EB;
-            margin-top: 0;
-        }
-        
-        ul {
-            margin: 10px 0;
-            padding-left: 25px;
-        }
-        
-        li {
-            margin: 8px 0;
-        }
-        
-        .footer {
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 2px solid #e5e7eb;
-            text-align: center;
-            color: #999;
-            font-size: 12px;
-        }
-        """
+            # Title
+            elements.append(Paragraph("Website Analysis Report", title_style))
+            elements.append(Spacer(1, 0.1*inch))
+            elements.append(Paragraph(analysis_data.get('website_url', ''), styles['Normal']))
+            elements.append(Paragraph(f"Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}", styles['Normal']))
+            elements.append(Spacer(1, 0.3*inch))
+            
+            # Overall Score Box
+            score_data = [
+                ['Overall Score', 'UX', 'SEO', 'Performance', 'Content'],
+                [
+                    f"{analysis_data.get('overall_score', 0):.0f}/100",
+                    f"{analysis_data.get('ux_analysis', {}).get('score', 0):.0f}/100",
+                    f"{analysis_data.get('seo_analysis', {}).get('score', 0):.0f}/100",
+                    f"{analysis_data.get('performance_analysis', {}).get('score', 0):.0f}/100",
+                    f"{analysis_data.get('content_analysis', {}).get('score', 0):.0f}/100"
+                ]
+            ]
+            
+            score_table = Table(score_data, colWidths=[1.5*inch, 1*inch, 1*inch, 1.2*inch, 1*inch])
+            score_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2563EB')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 11),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('TOPPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#F3F4F6')),
+                ('FONTSIZE', (0, 1), (-1, -1), 12),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica-Bold'),
+                ('TOPPADDING', (0, 1), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 1), (-1, -1), 10),
+                ('GRID', (0, 0), (-1, -1), 1, colors.white)
+            ]))
+            
+            elements.append(score_table)
+            elements.append(Spacer(1, 0.3*inch))
+            
+            # AI Summary
+            elements.append(Paragraph("Executive Summary", heading_style))
+            summary_text = analysis_data.get('ai_summary', 'No summary available')
+            
+            # Clean markdown formatting for PDF - remove markdown syntax
+            summary_text = summary_text.replace('**', '').replace('##', '').replace('###', '').replace('*', '')
+            
+            # Split into paragraphs
+            paragraphs = summary_text.split('\n\n')
+            for para in paragraphs:
+                if para.strip():
+                    elements.append(Paragraph(para.strip(), normal_style))
+                    elements.append(Spacer(1, 0.1*inch))
+            
+            elements.append(Spacer(1, 0.2*inch))
+            
+            # Priority Recommendations
+            elements.append(Paragraph("Priority Recommendations", heading_style))
+            recommendations = analysis_data.get('priority_recommendations', [])
+            
+            if recommendations:
+                for i, rec in enumerate(recommendations[:5], 1):  # Limit to top 5
+                    rec_title = rec.get('title', 'Recommendation')
+                    rec_desc = rec.get('description', '')
+                    rec_priority = rec.get('priority', 'N/A')
+                    rec_impact = rec.get('impact', 'N/A')
+                    rec_effort = rec.get('effort', 'N/A')
+                    
+                    elements.append(Paragraph(f"<b>{i}. {rec_title}</b>", subheading_style))
+                    elements.append(Paragraph(rec_desc, normal_style))
+                    elements.append(Paragraph(
+                        f"<i>Priority: {rec_priority} | Impact: {rec_impact} | Effort: {rec_effort}</i>",
+                        styles['Normal']
+                    ))
+                    elements.append(Spacer(1, 0.15*inch))
+            else:
+                elements.append(Paragraph("No recommendations available", normal_style))
+            
+            elements.append(PageBreak())
+            
+            # Detailed Analysis Sections
+            sections = [
+                ('UX Analysis', 'ux_analysis'),
+                ('SEO Analysis', 'seo_analysis'),
+                ('Performance Analysis', 'performance_analysis'),
+                ('Content Analysis', 'content_analysis')
+            ]
+            
+            for section_title, section_key in sections:
+                section_data = analysis_data.get(section_key, {})
+                score = section_data.get('score', 0)
+                
+                elements.append(Paragraph(section_title, heading_style))
+                elements.append(Paragraph(f"<b>Score: {score:.0f}/100</b>", subheading_style))
+                
+                # Issues
+                elements.append(Paragraph("<b>Issues Found:</b>", subheading_style))
+                issues = section_data.get('issues', [])
+                if issues:
+                    for issue in issues[:10]:  # Limit to 10 issues
+                        elements.append(Paragraph(f"• {issue}", normal_style))
+                else:
+                    elements.append(Paragraph("No issues found", normal_style))
+                
+                elements.append(Spacer(1, 0.1*inch))
+                
+                # Recommendations
+                elements.append(Paragraph("<b>Recommendations:</b>", subheading_style))
+                recs = section_data.get('recommendations', [])
+                if recs:
+                    for rec in recs[:10]:  # Limit to 10 recommendations
+                        elements.append(Paragraph(f"• {rec}", normal_style))
+                else:
+                    elements.append(Paragraph("No recommendations", normal_style))
+                
+                elements.append(Spacer(1, 0.25*inch))
+            
+            # Footer
+            elements.append(Spacer(1, 0.5*inch))
+            footer_style = ParagraphStyle(
+                'Footer',
+                parent=styles['Normal'],
+                fontSize=8,
+                textColor=colors.grey,
+                alignment=TA_CENTER
+            )
+            elements.append(Paragraph(
+                "Generated by AI Website Analyzer | © 2026 WebAnalyzer AI",
+                footer_style
+            ))
+            
+            # Build PDF
+            print(f"📄 Building PDF document...")
+            doc.build(elements)
+            print(f"✅ PDF created successfully: {output_path}")
+            
+            return output_path
+            
+        except Exception as e:
+            print(f"❌ PDF generation failed: {e}")
+            import traceback
+            traceback.print_exc()
+            raise

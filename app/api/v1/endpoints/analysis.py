@@ -26,7 +26,10 @@ async def create_analysis(
     user_id = current_user.get("user_id") if current_user else None
     plan = current_user.get("plan", "free") if current_user else "free"
     
-    await check_rate_limit(user_id, plan, db)
+    try:
+        await check_rate_limit(user_id, plan, db)
+    except HTTPException as e:
+        raise e
     
     # Create analysis record
     analysis_dict = {
@@ -39,13 +42,26 @@ async def create_analysis(
     result = await db.analyses.insert_one(analysis_dict)
     analysis_id = str(result.inserted_id)
     
-    # Start background analysis
-    background_tasks.add_task(perform_website_analysis, analysis_id, str(analysis_data.website_url))
+    # Run analysis immediately (not in background for now)
+    # This ensures it completes without needing Celery
+    try:
+        print(f"🔍 Starting analysis for {analysis_data.website_url}")
+        await perform_website_analysis(analysis_id, str(analysis_data.website_url))
+        print(f"✅ Analysis completed for {analysis_id}")
+    except Exception as e:
+        print(f"❌ Analysis error: {e}")
+        import traceback
+        traceback.print_exc()
+        # Update status to failed
+        await db.analyses.update_one(
+            {"_id": ObjectId(analysis_id)},
+            {"$set": {"status": "failed", "error_message": str(e)}}
+        )
     
     return AnalysisResponse(
         id=analysis_id,
         website_url=str(analysis_data.website_url),
-        status="pending",
+        status="processing",
         overall_score=None,
         created_at=analysis_dict["created_at"],
         completed_at=None

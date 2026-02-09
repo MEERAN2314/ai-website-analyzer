@@ -14,26 +14,49 @@ class AIService:
         """Generate AI summary of the analysis"""
         
         prompt = f"""
-        You are a professional website analyst. Analyze the following website analysis data and provide a comprehensive summary.
+        You are a professional website analyst. Analyze the following website analysis data and provide a comprehensive, well-structured summary in markdown format.
         
         Website: {analysis_data.get('website_url')}
+        Overall Score: {analysis_data.get('overall_score', 'N/A'):.1f}/100
         
-        UX Analysis Score: {analysis_data.get('ux_analysis', {}).get('score', 'N/A')}/100
-        SEO Analysis Score: {analysis_data.get('seo_analysis', {}).get('score', 'N/A')}/100
-        Performance Score: {analysis_data.get('performance_analysis', {}).get('score', 'N/A')}/100
-        Content Quality Score: {analysis_data.get('content_analysis', {}).get('score', 'N/A')}/100
+        **Scores Breakdown:**
+        - UX Analysis: {analysis_data.get('ux_analysis', {}).get('score', 'N/A')}/100
+        - SEO Analysis: {analysis_data.get('seo_analysis', {}).get('score', 'N/A')}/100
+        - Performance: {analysis_data.get('performance_analysis', {}).get('score', 'N/A')}/100
+        - Content Quality: {analysis_data.get('content_analysis', {}).get('score', 'N/A')}/100
         
-        Key Issues:
-        - UX: {', '.join(analysis_data.get('ux_analysis', {}).get('issues', [])[:3])}
-        - SEO: {', '.join(analysis_data.get('seo_analysis', {}).get('issues', [])[:3])}
-        - Performance: {', '.join(analysis_data.get('performance_analysis', {}).get('issues', [])[:3])}
-        - Content: {', '.join(analysis_data.get('content_analysis', {}).get('issues', [])[:3])}
+        **Key Issues Identified:**
         
-        Provide a professional, actionable summary in 3-4 paragraphs covering:
-        1. Overall website health assessment
-        2. Critical issues that need immediate attention
-        3. Quick wins for improvement
-        4. Long-term recommendations for growth
+        UX Issues:
+        {chr(10).join('- ' + issue for issue in analysis_data.get('ux_analysis', {}).get('issues', [])[:3])}
+        
+        SEO Issues:
+        {chr(10).join('- ' + issue for issue in analysis_data.get('seo_analysis', {}).get('issues', [])[:3])}
+        
+        Performance Issues:
+        {chr(10).join('- ' + issue for issue in analysis_data.get('performance_analysis', {}).get('issues', [])[:3])}
+        
+        Content Issues:
+        {chr(10).join('- ' + issue for issue in analysis_data.get('content_analysis', {}).get('issues', [])[:3])}
+        
+        Please provide a professional analysis summary with the following structure in markdown:
+        
+        ## 🎯 Overall Assessment
+        A brief 2-3 sentence overview of the website's current state and overall health.
+        
+        ## 🚨 Critical Issues
+        List 3-4 most critical issues that need immediate attention. Use bullet points.
+        
+        ## ⚡ Quick Wins
+        List 3-4 easy-to-implement improvements that will have immediate impact. Use bullet points.
+        
+        ## 📈 Long-term Recommendations
+        Provide 3-4 strategic recommendations for sustained growth and improvement. Use bullet points.
+        
+        ## 💡 Key Takeaway
+        A single paragraph summarizing the most important action the website owner should take.
+        
+        Use clear, actionable language. Be specific and professional. Format using markdown with headers, bold text, and bullet points for readability.
         """
         
         response = self.model.generate_content(prompt)
@@ -121,15 +144,15 @@ class AIService:
         
         # Build context from analysis
         context = f"""
-        You are an expert website analyst helping a user understand their website analysis.
+        You are an expert website analyst helping a user understand their website analysis. Provide clear, actionable advice.
         
         Website: {analysis.get('website_url')}
         Overall Score: {analysis.get('overall_score', 'N/A')}/100
         
-        Analysis Summary:
+        **Analysis Summary:**
         {analysis.get('ai_summary', 'Analysis in progress')}
         
-        Scores:
+        **Scores:**
         - UX: {analysis.get('ux_analysis', {}).get('score', 'N/A')}/100
         - SEO: {analysis.get('seo_analysis', {}).get('score', 'N/A')}/100
         - Performance: {analysis.get('performance_analysis', {}).get('score', 'N/A')}/100
@@ -150,7 +173,13 @@ class AIService:
         
         User: {user_message}
         
-        Provide a helpful, professional response. Be specific and actionable.
+        Provide a helpful, professional response using markdown formatting. Be specific and actionable. Use:
+        - **Bold** for emphasis
+        - Bullet points for lists
+        - Code formatting for technical terms
+        - Clear paragraphs for readability
+        
+        Keep responses concise but informative (2-4 paragraphs max).
         """
         
         response = self.model.generate_content(prompt)

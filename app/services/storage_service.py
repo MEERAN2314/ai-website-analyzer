@@ -1,94 +1,75 @@
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
-from typing import Optional
 import os
+import shutil
+from typing import Optional
+from datetime import datetime
 
 from app.core.config import settings
 
 
 class StorageService:
-    """Service for uploading files to Google Drive"""
+    """Service for storing PDF files locally"""
     
     def __init__(self):
-        self.service = None
-        self._initialize_service()
-    
-    def _initialize_service(self):
-        """Initialize Google Drive service"""
-        try:
-            if not os.path.exists(settings.GOOGLE_DRIVE_CREDENTIALS_FILE):
-                print(f"Warning: Google Drive credentials file not found: {settings.GOOGLE_DRIVE_CREDENTIALS_FILE}")
-                return
-            
-            SCOPES = ['https://www.googleapis.com/auth/drive.file']
-            
-            credentials = service_account.Credentials.from_service_account_file(
-                settings.GOOGLE_DRIVE_CREDENTIALS_FILE,
-                scopes=SCOPES
-            )
-            
-            self.service = build('drive', 'v3', credentials=credentials)
-            print("Google Drive service initialized successfully")
-            
-        except Exception as e:
-            print(f"Error initializing Google Drive service: {e}")
-            self.service = None
+        # Create outputs directory for PDFs
+        self.output_dir = "outputs/pdfs"
+        os.makedirs(self.output_dir, exist_ok=True)
+        
+        # Create static directory for serving files
+        self.static_dir = "app/static/pdfs"
+        os.makedirs(self.static_dir, exist_ok=True)
+        
+        print(f"Storage service initialized: {self.output_dir}")
     
     async def upload_pdf(self, file_path: str, filename: str) -> Optional[str]:
         """
-        Upload PDF file to Google Drive
+        Store PDF file locally and return access URL
         
         Args:
             file_path: Local path to the PDF file
-            filename: Name for the file in Google Drive
+            filename: Name for the file
             
         Returns:
-            Web view link to the uploaded file, or None if upload fails
+            URL to access the file, or None if storage fails
         """
-        if not self.service:
-            print("Google Drive service not initialized. Skipping upload.")
-            return None
-        
-        if not settings.GOOGLE_DRIVE_FOLDER_ID:
-            print("Google Drive folder ID not configured. Skipping upload.")
-            return None
-        
         try:
-            file_metadata = {
-                'name': filename,
-                'parents': [settings.GOOGLE_DRIVE_FOLDER_ID]
-            }
+            # Copy to static directory for serving
+            dest_path = os.path.join(self.static_dir, filename)
+            shutil.copy(file_path, dest_path)
             
-            media = MediaFileUpload(
-                file_path,
-                mimetype='application/pdf',
-                resumable=True
-            )
+            # Also keep in outputs for backup
+            backup_path = os.path.join(self.output_dir, filename)
+            shutil.copy(file_path, backup_path)
             
-            file = self.service.files().create(
-                body=file_metadata,
-                media_body=media,
-                fields='id, webViewLink, webContentLink'
-            ).execute()
+            # Return URL to access the file
+            file_url = f"/static/pdfs/{filename}"
+            print(f"File stored successfully: {file_url}")
             
-            print(f"File uploaded successfully: {file.get('webViewLink')}")
-            return file.get('webViewLink')
+            return file_url
             
         except Exception as e:
-            print(f"Error uploading file to Google Drive: {e}")
+            print(f"Error storing file: {e}")
             return None
     
-    async def delete_file(self, file_id: str) -> bool:
-        """Delete file from Google Drive"""
-        if not self.service:
-            return False
-        
+    async def delete_file(self, filename: str) -> bool:
+        """Delete file from storage"""
         try:
-            self.service.files().delete(fileId=file_id).execute()
-            print(f"File deleted successfully: {file_id}")
+            # Delete from static directory
+            static_path = os.path.join(self.static_dir, filename)
+            if os.path.exists(static_path):
+                os.remove(static_path)
+            
+            # Delete from outputs directory
+            output_path = os.path.join(self.output_dir, filename)
+            if os.path.exists(output_path):
+                os.remove(output_path)
+            
+            print(f"File deleted successfully: {filename}")
             return True
             
         except Exception as e:
-            print(f"Error deleting file from Google Drive: {e}")
+            print(f"Error deleting file: {e}")
             return False
+    
+    def get_file_path(self, filename: str) -> str:
+        """Get full path to stored file"""
+        return os.path.join(self.static_dir, filename)

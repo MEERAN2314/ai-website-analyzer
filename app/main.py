@@ -59,6 +59,30 @@ app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 async def root(request: Request):
     return templates.TemplateResponse("pages/landing.html", {"request": request})
 
+# Page routes (not under /api/v1)
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return templates.TemplateResponse("pages/login.html", {"request": request})
+
+@app.get("/register", response_class=HTMLResponse)
+async def register_page(request: Request):
+    return templates.TemplateResponse("pages/register.html", {"request": request})
+
+@app.get("/analyze", response_class=HTMLResponse)
+async def analyze_page(request: Request):
+    return templates.TemplateResponse("pages/analyze.html", {"request": request})
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard_page(request: Request):
+    return templates.TemplateResponse("pages/dashboard.html", {"request": request})
+
+@app.get("/results/{analysis_id}", response_class=HTMLResponse)
+async def results_page(request: Request, analysis_id: str):
+    return templates.TemplateResponse(
+        "pages/results.html",
+        {"request": request, "analysis_id": analysis_id}
+    )
+
 # Health check
 @app.get("/health")
 async def health_check():
