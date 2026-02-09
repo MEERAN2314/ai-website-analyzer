@@ -9,6 +9,8 @@ from app.analyzers.ux_analyzer import UXAnalyzer
 from app.analyzers.seo_analyzer import SEOAnalyzer
 from app.analyzers.performance_analyzer import PerformanceAnalyzer
 from app.analyzers.content_analyzer import ContentAnalyzer
+from app.analyzers.security_analyzer import SecurityAnalyzer
+from app.analyzers.image_analyzer import ImageAnalyzer
 from app.services.ai_service import AIService
 from app.services.pdf_service import PDFService
 from app.services.storage_service import StorageService
@@ -34,15 +36,19 @@ async def perform_website_analysis(analysis_id: str, website_url: str):
         seo_analyzer = SEOAnalyzer()
         performance_analyzer = PerformanceAnalyzer()
         content_analyzer = ContentAnalyzer()
+        security_analyzer = SecurityAnalyzer()
+        image_analyzer = ImageAnalyzer()
         ai_service = AIService()
         
         # Run analyses in parallel
         print(f"📊 Analysis {analysis_id}: Running analyzers...")
-        ux_result, seo_result, perf_result, content_result = await asyncio.gather(
+        ux_result, seo_result, perf_result, content_result, security_result, image_result = await asyncio.gather(
             ux_analyzer.analyze(website_url),
             seo_analyzer.analyze(website_url),
             performance_analyzer.analyze(website_url),
             content_analyzer.analyze(website_url),
+            security_analyzer.analyze(website_url),
+            image_analyzer.analyze(website_url),
             return_exceptions=True
         )
         print(f"📊 Analysis {analysis_id}: Analyzers completed")
@@ -60,13 +66,21 @@ async def perform_website_analysis(analysis_id: str, website_url: str):
         if isinstance(content_result, Exception):
             print(f"⚠️  Content analyzer error: {content_result}")
             content_result = {"score": 0, "issues": ["Analysis failed"], "recommendations": []}
+        if isinstance(security_result, Exception):
+            print(f"⚠️  Security analyzer error: {security_result}")
+            security_result = {"score": 0, "issues": ["Analysis failed"], "recommendations": []}
+        if isinstance(image_result, Exception):
+            print(f"⚠️  Image analyzer error: {image_result}")
+            image_result = {"score": 0, "issues": ["Analysis failed"], "recommendations": []}
         
-        # Calculate overall score
+        # Calculate overall score (6 analyzers with weighted importance)
         overall_score = (
-            ux_result.get("score", 0) * 0.25 +
-            seo_result.get("score", 0) * 0.25 +
-            perf_result.get("score", 0) * 0.25 +
-            content_result.get("score", 0) * 0.25
+            ux_result.get("score", 0) * 0.18 +
+            seo_result.get("score", 0) * 0.20 +
+            perf_result.get("score", 0) * 0.20 +
+            content_result.get("score", 0) * 0.17 +
+            security_result.get("score", 0) * 0.15 +
+            image_result.get("score", 0) * 0.10
         )
         print(f"📊 Analysis {analysis_id}: Overall score calculated: {overall_score}")
         
@@ -77,7 +91,9 @@ async def perform_website_analysis(analysis_id: str, website_url: str):
             "ux_analysis": ux_result,
             "seo_analysis": seo_result,
             "performance_analysis": perf_result,
-            "content_analysis": content_result
+            "content_analysis": content_result,
+            "security_analysis": security_result,
+            "image_analysis": image_result
         }
         
         # Generate AI insights
@@ -106,6 +122,8 @@ async def perform_website_analysis(analysis_id: str, website_url: str):
                 'seo_analysis': seo_result,
                 'performance_analysis': perf_result,
                 'content_analysis': content_result,
+                'security_analysis': security_result,
+                'image_analysis': image_result,
                 'ai_summary': ai_summary,
                 'priority_recommendations': priority_recommendations
             }
@@ -132,6 +150,8 @@ async def perform_website_analysis(analysis_id: str, website_url: str):
             "seo_analysis": seo_result,
             "performance_analysis": perf_result,
             "content_analysis": content_result,
+            "security_analysis": security_result,
+            "image_analysis": image_result,
             "ai_summary": ai_summary,
             "priority_recommendations": priority_recommendations,
             "action_plan": action_plan,

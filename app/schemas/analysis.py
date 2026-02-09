@@ -25,6 +25,8 @@ class AnalysisDetail(BaseModel):
     seo_analysis: Optional[Dict]
     performance_analysis: Optional[Dict]
     content_analysis: Optional[Dict]
+    security_analysis: Optional[Dict]
+    image_analysis: Optional[Dict]
     ai_summary: Optional[str]
     priority_recommendations: Optional[List[Dict]]
     action_plan: Optional[Dict]
