@@ -293,7 +293,7 @@
             </div>
             
             <!-- Score Cards with Icons and Colors -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
                 <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500 transform hover:scale-105 transition">
                     <div class="flex items-center mb-3">
                         <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
@@ -338,6 +338,28 @@
                     <h3 class="text-sm text-gray-600 mb-2 font-medium">Content</h3>
                     <div class="text-3xl font-bold text-purple-600" id="contentScore">-</div>
                 </div>
+                <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-red-500 transform hover:scale-105 transition">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-sm text-gray-600 mb-2 font-medium">Security</h3>
+                    <div class="text-3xl font-bold text-red-600" id="securityScore">-</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-indigo-500 transform hover:scale-105 transition">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-sm text-gray-600 mb-2 font-medium">Images</h3>
+                    <div class="text-3xl font-bold text-indigo-600" id="imageScore">-</div>
+                </div>
             </div>
             
             <!-- AI Summary with Enhanced Design -->
@@ -375,18 +397,18 @@
             <!-- Detailed Analysis Tabs with Icons -->
             <div class="bg-white rounded-2xl shadow-md p-8 mb-6">
                 <div class="border-b border-gray-200 mb-6">
-                    <nav class="-mb-px flex space-x-8">
+                    <nav class="-mb-px flex flex-wrap space-x-4 md:space-x-8">
                         <button class="tab-btn active" data-tab="ux">
                             <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
                             </svg>
-                            UX Analysis
+                            UX
                         </button>
                         <button class="tab-btn" data-tab="seo">
                             <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
-                            SEO Analysis
+                            SEO
                         </button>
                         <button class="tab-btn" data-tab="performance">
                             <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -399,6 +421,18 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                             Content
+                        </button>
+                        <button class="tab-btn" data-tab="security">
+                            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                            Security
+                        </button>
+                        <button class="tab-btn" data-tab="images">
+                            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            Images
                         </button>
                     </nav>
                 </div>
@@ -595,6 +629,27 @@ function displayResults(data) {
     document.getElementById('loadingResults').classList.add('hidden');
     document.getElementById('resultsContent').classList.remove('hidden');
     
+    // Check if this is an old analysis without new analyzers
+    const hasNewAnalyzers = data.security_analysis && data.image_analysis;
+    if (!hasNewAnalyzers) {
+        // Show notification banner
+        const banner = document.createElement('div');
+        banner.className = 'bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-r-lg';
+        banner.innerHTML = `
+            <div class="flex items-start">
+                <svg class="w-6 h-6 text-blue-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                    <h3 class="text-sm font-semibold text-blue-900 mb-1">New Analysis Features Available</h3>
+                    <p class="text-sm text-blue-700">This analysis was created before Security and Image optimization features were added. Run a new analysis to see these additional insights!</p>
+                </div>
+            </div>
+        `;
+        const resultsContent = document.getElementById('resultsContent');
+        resultsContent.insertBefore(banner, resultsContent.firstChild);
+    }
+    
     // Header
     document.getElementById('websiteUrl').textContent = data.website_url;
     document.getElementById('completedDate').textContent = formatDate(data.completed_at);
@@ -609,6 +664,26 @@ function displayResults(data) {
     document.getElementById('seoScore').textContent = data.seo_analysis.score.toFixed(0);
     document.getElementById('perfScore').textContent = data.performance_analysis.score.toFixed(0);
     document.getElementById('contentScore').textContent = data.content_analysis.score.toFixed(0);
+    
+    // Handle new analyzers with visual feedback
+    const securityScore = data.security_analysis && data.security_analysis.score ? data.security_analysis.score : 0;
+    const imageScore = data.image_analysis && data.image_analysis.score ? data.image_analysis.score : 0;
+    
+    const securityScoreEl = document.getElementById('securityScore');
+    const imageScoreEl = document.getElementById('imageScore');
+    
+    securityScoreEl.textContent = securityScore.toFixed(0);
+    imageScoreEl.textContent = imageScore.toFixed(0);
+    
+    // Add visual indicator for missing data
+    if (securityScore === 0 && !data.security_analysis) {
+        securityScoreEl.parentElement.style.opacity = '0.5';
+        securityScoreEl.title = 'Run a new analysis to see Security score';
+    }
+    if (imageScore === 0 && !data.image_analysis) {
+        imageScoreEl.parentElement.style.opacity = '0.5';
+        imageScoreEl.title = 'Run a new analysis to see Image optimization score';
+    }
     
     // AI Summary - render as markdown
     const aiSummaryEl = document.getElementById('aiSummary');
@@ -681,9 +756,24 @@ function displayTabContent(tab, data) {
     const analysisData = data[`${tab}_analysis`];
     
     console.log(`Displaying ${tab} tab:`, analysisData);
+    console.log('Full data object:', data);
     
-    if (!analysisData) {
-        tabContent.innerHTML = '<p class="text-gray-600">No data available for this analysis</p>';
+    if (!analysisData || !analysisData.score) {
+        // Check if this is a new analyzer that might not have data yet
+        if (tab === 'security' || tab === 'images') {
+            tabContent.innerHTML = `
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+                    <svg class="w-16 h-16 mx-auto mb-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Analysis Not Available</h3>
+                    <p class="text-gray-600 mb-4">This analysis was performed before ${tab === 'security' ? 'Security' : 'Image'} analysis was added.</p>
+                    <p class="text-sm text-gray-500">Please run a new analysis to see ${tab === 'security' ? 'security' : 'image optimization'} results.</p>
+                </div>
+            `;
+        } else {
+            tabContent.innerHTML = '<p class="text-gray-600">No data available for this analysis</p>';
+        }
         return;
     }
     

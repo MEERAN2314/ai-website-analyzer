@@ -245,32 +245,40 @@ class PDFService:
             elements.append(score_wrapper)
             elements.append(Spacer(1, 0.35*inch))
             
-            # Score Breakdown
+            # Score Breakdown (6 analyzers)
             ux_score = analysis_data.get('ux_analysis', {}).get('score', 0)
             seo_score = analysis_data.get('seo_analysis', {}).get('score', 0)
             perf_score = analysis_data.get('performance_analysis', {}).get('score', 0)
             content_score = analysis_data.get('content_analysis', {}).get('score', 0)
+            security_score = analysis_data.get('security_analysis', {}).get('score', 0)
+            image_score = analysis_data.get('image_analysis', {}).get('score', 0)
             
             score_breakdown = [
                 [
-                    Paragraph('<b>UX Score</b>', ParagraphStyle('', fontSize=11, alignment=TA_CENTER, textColor=self.colors['gray_dark'])),
-                    Paragraph('<b>SEO Score</b>', ParagraphStyle('', fontSize=11, alignment=TA_CENTER, textColor=self.colors['gray_dark'])),
-                    Paragraph('<b>Performance</b>', ParagraphStyle('', fontSize=11, alignment=TA_CENTER, textColor=self.colors['gray_dark'])),
-                    Paragraph('<b>Content</b>', ParagraphStyle('', fontSize=11, alignment=TA_CENTER, textColor=self.colors['gray_dark']))
+                    Paragraph('<b>UX</b>', ParagraphStyle('', fontSize=10, alignment=TA_CENTER, textColor=self.colors['gray_dark'])),
+                    Paragraph('<b>SEO</b>', ParagraphStyle('', fontSize=10, alignment=TA_CENTER, textColor=self.colors['gray_dark'])),
+                    Paragraph('<b>Performance</b>', ParagraphStyle('', fontSize=10, alignment=TA_CENTER, textColor=self.colors['gray_dark'])),
+                    Paragraph('<b>Content</b>', ParagraphStyle('', fontSize=10, alignment=TA_CENTER, textColor=self.colors['gray_dark'])),
+                    Paragraph('<b>Security</b>', ParagraphStyle('', fontSize=10, alignment=TA_CENTER, textColor=self.colors['gray_dark'])),
+                    Paragraph('<b>Images</b>', ParagraphStyle('', fontSize=10, alignment=TA_CENTER, textColor=self.colors['gray_dark']))
                 ],
                 [
-                    Paragraph(f'<font size="28" color="{self._get_score_color(ux_score)}"><b>{ux_score:.0f}</b></font>', 
+                    Paragraph(f'<font size="24" color="{self._get_score_color(ux_score)}"><b>{ux_score:.0f}</b></font>', 
                              ParagraphStyle('', alignment=TA_CENTER)),
-                    Paragraph(f'<font size="28" color="{self._get_score_color(seo_score)}"><b>{seo_score:.0f}</b></font>', 
+                    Paragraph(f'<font size="24" color="{self._get_score_color(seo_score)}"><b>{seo_score:.0f}</b></font>', 
                              ParagraphStyle('', alignment=TA_CENTER)),
-                    Paragraph(f'<font size="28" color="{self._get_score_color(perf_score)}"><b>{perf_score:.0f}</b></font>', 
+                    Paragraph(f'<font size="24" color="{self._get_score_color(perf_score)}"><b>{perf_score:.0f}</b></font>', 
                              ParagraphStyle('', alignment=TA_CENTER)),
-                    Paragraph(f'<font size="28" color="{self._get_score_color(content_score)}"><b>{content_score:.0f}</b></font>', 
+                    Paragraph(f'<font size="24" color="{self._get_score_color(content_score)}"><b>{content_score:.0f}</b></font>', 
+                             ParagraphStyle('', alignment=TA_CENTER)),
+                    Paragraph(f'<font size="24" color="{self._get_score_color(security_score)}"><b>{security_score:.0f}</b></font>', 
+                             ParagraphStyle('', alignment=TA_CENTER)),
+                    Paragraph(f'<font size="24" color="{self._get_score_color(image_score)}"><b>{image_score:.0f}</b></font>', 
                              ParagraphStyle('', alignment=TA_CENTER))
                 ]
             ]
             
-            breakdown_table = Table(score_breakdown, colWidths=[1.5*inch] * 4, rowHeights=[0.35*inch, 0.7*inch])
+            breakdown_table = Table(score_breakdown, colWidths=[0.95*inch] * 6, rowHeights=[0.3*inch, 0.6*inch])
             breakdown_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), self.colors['white']),
                 ('BACKGROUND', (0, 1), (0, 1), self.colors['bg_blue']),
@@ -362,7 +370,9 @@ class PDFService:
                 ('UX Analysis', 'ux_analysis', self.colors['primary'], self.colors['bg_blue']),
                 ('SEO Analysis', 'seo_analysis', self.colors['success'], self.colors['bg_green']),
                 ('Performance Analysis', 'performance_analysis', self.colors['warning'], self.colors['bg_yellow']),
-                ('Content Analysis', 'content_analysis', self.colors['danger'], self.colors['bg_red'])
+                ('Content Analysis', 'content_analysis', self.colors['danger'], self.colors['bg_red']),
+                ('Security Analysis', 'security_analysis', colors.HexColor('#DC2626'), colors.HexColor('#FEF2F2')),
+                ('Image Optimization', 'image_analysis', colors.HexColor('#7C3AED'), colors.HexColor('#F5F3FF'))
             ]
             
             for section_title, section_key, section_color, section_bg in sections:
