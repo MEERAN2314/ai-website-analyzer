@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block title %}Competitor Analysis - AI Website Analyzer{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                Competitor Analysis
+            </h1>
+            <p class="text-xl text-gray-600">
+                Compare your website against competitors and discover opportunities for improvement
+            </p>
+        </div>
+
+        <!-- Comparison Form -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <form id="comparisonForm" class="space-y-6">
+                <!-- Your Website -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Your Website URL
+                    </label>
+                    <input
+                        type="url"
+                        id="yourUrl"
+                        name="your_url"
+                        placeholder="https://yourwebsite.com"
+                        required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                </div>
+
+                <!-- Competitors -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Competitor URLs (1-5)
+                    </label>
+                    <div id="competitorInputs" class="space-y-3">
+                        <div class="flex items-center space-x-2">
+                            <input
+                                type="url"
+                                name="competitor_url"
+                                placeholder="https://competitor1.com"
+                                required
+                                class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
+                            <button
+                                type="button"
+                                onclick="removeCompetitor(this)"
+                                class="hidden px-3 py-3 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
+                            >
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button
+                        type="button"
+                        id="addCompetitorBtn"
+                        onclick="addCompetitorInput()"
+                        class="mt-3 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center space-x-2"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <span>Add Another Competitor</span>
+                    </button>
+                    <p class="mt-2 text-sm text-gray-500">
+                        Add 1-5 competitor websites to compare against
+                    </p>
+                </div>
+
+                <!-- Submit Button -->
+                <button
+                    type="submit"
+                    id="submitBtn"
+                    class="w-full bg-gradient-to-r from-primary to-secondary text-white py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition transform hover:scale-105 shadow-lg"
+                >
+                    Start Comparison Analysis
+                </button>
+            </form>
+        </div>
+
+        <!-- Features -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-xl p-6 shadow-md">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">Side-by-Side Comparison</h3>
+                <p class="text-sm text-gray-600">Compare all 6 metrics across multiple competitors</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-md">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">Identify Strengths</h3>
+                <p class="text-sm text-gray-600">Discover where you're leading the competition</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-md">
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">Find Opportunities</h3>
+                <p class="text-sm text-gray-600">Get actionable insights to outperform competitors</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div id="loadingModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
+        <div class="text-center">
+            <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Analyzing Competitors...</h3>
+            <p class="text-gray-600 mb-4" id="loadingMessage">
+                This may take 30-60 seconds
+            </p>
+            <div class="bg-gray-100 rounded-lg p-4">
+                <p class="text-sm text-gray-700" id="progressMessage">
+                    Initializing analysis...
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let competitorCount = 1;
+const maxCompetitors = 5;
+
+// Pre-fill URL from query parameter
+window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const prefilledUrl = urlParams.get('url');
+    if (prefilledUrl) {
+        document.getElementById('yourUrl').value = prefilledUrl;
+    }
+});
+
+function addCompetitorInput() {
+    if (competitorCount >= maxCompetitors) {
+        alert('Maximum 5 competitors allowed');
+        return;
+    }
+    
+    competitorCount++;
+    
+    const container = document.getElementById('competitorInputs');
+    const div = document.createElement('div');
+    div.className = 'flex items-center space-x-2';
+    div.innerHTML = `
+        <input
+            type="url"
+            name="competitor_url"
+            placeholder="https://competitor${competitorCount}.com"
+            required
+            class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+        />
+        <button
+            type="button"
+            onclick="removeCompetitor(this)"
+            class="px-3 py-3 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
+        >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    `;
+    container.appendChild(div);
+    
+    // Show remove buttons
+    updateRemoveButtons();
+    
+    // Hide add button if max reached
+    if (competitorCount >= maxCompetitors) {
+        document.getElementById('addCompetitorBtn').style.display = 'none';
+    }
+}
+
+function removeCompetitor(button) {
+    button.parentElement.remove();
+    competitorCount--;
+    
+    // Show add button
+    document.getElementById('addCompetitorBtn').style.display = 'flex';
+    
+    // Update remove buttons
+    updateRemoveButtons();
+}
+
+function updateRemoveButtons() {
+    const inputs = document.querySelectorAll('#competitorInputs > div');
+    inputs.forEach((div, index) => {
+        const removeBtn = div.querySelector('button');
+        if (inputs.length > 1) {
+            removeBtn.classList.remove('hidden');
+        } else {
+            removeBtn.classList.add('hidden');
+        }
+    });
+}
+
+// Form submission
+document.getElementById('comparisonForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const yourUrl = document.getElementById('yourUrl').value;
+    const competitorInputs = document.querySelectorAll('input[name="competitor_url"]');
+    const competitorUrls = Array.from(competitorInputs)
+        .map(input => input.value)
+        .filter(url => url.trim() !== '');
+    
+    if (competitorUrls.length === 0) {
+        alert('Please add at least one competitor URL');
+        return;
+    }
+    
+    // Show loading modal
+    document.getElementById('loadingModal').classList.remove('hidden');
+    document.getElementById('progressMessage').textContent = `Analyzing ${competitorUrls.length + 1} websites...`;
+    
+    try {
+        const response = await fetch('/api/v1/comparisons/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                your_url: yourUrl,
+                competitor_urls: competitorUrls
+            })
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to create comparison');
+        }
+        
+        const data = await response.json();
+        const comparisonId = data.comparison_id;
+        
+        // Poll for completion
+        pollComparisonStatus(comparisonId);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('loadingModal').classList.add('hidden');
+        alert('Error: ' + error.message);
+    }
+});
+
+async function pollComparisonStatus(comparisonId) {
+    const maxAttempts = 60; // 60 attempts = 2 minutes
+    let attempts = 0;
+    
+    const interval = setInterval(async () => {
+        attempts++;
+        
+        try {
+            const response = await fetch(`/api/v1/comparisons/${comparisonId}/status`);
+            const data = await response.json();
+            
+            if (data.status === 'completed') {
+                clearInterval(interval);
+                window.location.href = `/comparison/${comparisonId}`;
+            } else if (data.status === 'failed') {
+                clearInterval(interval);
+                document.getElementById('loadingModal').classList.add('hidden');
+                alert('Comparison failed. Please try again.');
+            } else if (attempts >= maxAttempts) {
+                clearInterval(interval);
+                document.getElementById('loadingModal').classList.add('hidden');
+                alert('Comparison is taking longer than expected. Please check back later.');
+            } else {
+                document.getElementById('progressMessage').textContent = 
+                    `Analysis in progress... (${attempts * 2}s elapsed)`;
+            }
+        } catch (error) {
+            console.error('Polling error:', error);
+        }
+    }, 2000); // Poll every 2 seconds
+}
+</script>
+{% endblock %}

@@ -11,6 +11,201 @@ from app.core.database import get_database
 router = APIRouter()
 
 
+# ==================== COMPARISON SHARING ====================
+
+@router.post("/comparison/{comparison_id}/share")
+async def create_comparison_share_link(
+    comparison_id: str,
+    expires_in_days: int = 30,
+    password: Optional[str] = None
+):
+    """
+    Create a shareable link for comparison analysis
+    
+    - **comparison_id**: The comparison ID
+    - **expires_in_days**: Number of days until link expires (default: 30)
+    - **password**: Optional password protection
+    """
+    db = get_database()
+    
+    try:
+        comparison = await db.comparisons.find_one({"_id": ObjectId(comparison_id)})
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid comparison ID"
+        )
+    
+    if not comparison:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Comparison not found"
+        )
+    
+    if comparison.get("status") != "completed":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot share incomplete comparison"
+        )
+    
+    # Generate unique share token
+    share_token = secrets.token_urlsafe(32)
+    expires_at = datetime.utcnow() + timedelta(days=expires_in_days)
+    
+    # Hash password if provided
+    password_hash = None
+    if password:
+        from app.core.security import get_password_hash
+        password_hash = get_password_hash(password)
+    
+    # Create share record
+    share_data = {
+        "comparison_id": comparison_id,
+        "share_token": share_token,
+        "created_at": datetime.utcnow(),
+        "expires_at": expires_at,
+        "view_count": 0,
+        "is_active": True,
+        "password_hash": password_hash,
+        "type": "comparison"
+    }
+    
+    result = await db.shares.insert_one(share_data)
+    
+    # Update comparison with share info
+    await db.comparisons.update_one(
+        {"_id": ObjectId(comparison_id)},
+        {"$set": {"is_shared": True, "last_shared_at": datetime.utcnow()}}
+    )
+    
+    share_url = f"/share/comparison/{share_token}"
+    full_url = f"http://localhost:8000{share_url}"  # Update with your domain
+    
+    return {
+        "share_id": str(result.inserted_id),
+        "share_token": share_token,
+        "share_url": share_url,
+        "full_url": full_url,
+        "expires_at": expires_at,
+        "has_password": password is not None,
+        "message": "Share link created successfully"
+    }
+
+
+@router.get("/comparison/{share_token}")
+async def get_shared_comparison(share_token: str, password: Optional[str] = None):
+    """
+    Get comparison via share link
+    
+    - **share_token**: The share token
+    - **password**: Password if link is protected
+    """
+    db = get_database()
+    
+    # Find share record
+    share = await db.shares.find_one({
+        "share_token": share_token,
+        "type": "comparison"
+    })
+    
+    if not share:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Share link not found"
+        )
+    
+    # Check if expired
+    if share.get('expires_at') < datetime.utcnow():
+        raise HTTPException(
+            status_code=status.HTTP_410_GONE,
+            detail="Share link has expired"
+        )
+    
+    # Check if active
+    if not share.get('is_active', True):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Share link has been deactivated"
+        )
+    
+    # Check password if required
+    if share.get('password_hash'):
+        if not password:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Password required"
+            )
+        
+        from app.core.security import verify_password
+        if not verify_password(password, share['password_hash']):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect password"
+            )
+    
+    # Get comparison
+    comparison_id = share.get('comparison_id')
+    try:
+        comparison = await db.comparisons.find_one({"_id": ObjectId(comparison_id)})
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid comparison"
+        )
+    
+    if not comparison:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Comparison not found"
+        )
+    
+    # Increment view count
+    await db.shares.update_one(
+        {"share_token": share_token},
+        {
+            "$inc": {"view_count": 1},
+            "$set": {"last_viewed_at": datetime.utcnow()}
+        }
+    )
+    
+    # Convert ObjectId to string
+    comparison["_id"] = str(comparison["_id"])
+    
+    return comparison
+
+
+@router.delete("/comparison/{share_token}")
+async def revoke_comparison_share_link(share_token: str):
+    """
+    Revoke a comparison share link
+    
+    - **share_token**: The share token
+    """
+    db = get_database()
+    
+    share = await db.shares.find_one({
+        "share_token": share_token,
+        "type": "comparison"
+    })
+    
+    if not share:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Share link not found"
+        )
+    
+    # Deactivate share
+    await db.shares.update_one(
+        {"share_token": share_token},
+        {"$set": {"is_active": False, "revoked_at": datetime.utcnow()}}
+    )
+    
+    return {"message": "Share link revoked successfully"}
+
+
+# ==================== ANALYSIS SHARING ====================
+
+
 @router.post("/{analysis_id}/share")
 async def create_share_link(
     analysis_id: str,
