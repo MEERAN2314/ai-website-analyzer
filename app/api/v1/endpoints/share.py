@@ -328,6 +328,8 @@ async def get_shared_analysis(share_token: str):
         seo_analysis=analysis.get("seo_analysis"),
         performance_analysis=analysis.get("performance_analysis"),
         content_analysis=analysis.get("content_analysis"),
+        security_analysis=analysis.get("security_analysis"),
+        image_analysis=analysis.get("image_analysis"),
         ai_summary=analysis.get("ai_summary"),
         priority_recommendations=analysis.get("priority_recommendations"),
         action_plan=analysis.get("action_plan"),

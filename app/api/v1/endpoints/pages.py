@@ -61,3 +61,15 @@ async def shared_comparison_page(request: Request, share_token: str):
         "pages/shared_comparison.html",
         {"request": request, "share_token": share_token}
     )
+
+
+@router.get("/profile", response_class=HTMLResponse)
+async def profile_page(request: Request):
+    """User profile page"""
+    return templates.TemplateResponse("pages/profile.html", {"request": request})
+
+
+@router.get("/settings", response_class=HTMLResponse)
+async def settings_page(request: Request):
+    """User settings page"""
+    return templates.TemplateResponse("pages/profile.html", {"request": request})
