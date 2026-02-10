@@ -1,23 +1,19 @@
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, EmailStr, Field
+from typing import Optional, Annotated
+from pydantic import BaseModel, EmailStr, Field, BeforeValidator
 from bson import ObjectId
 
 
-class PyObjectId(ObjectId):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v):
-        if not ObjectId.is_valid(v):
-            raise ValueError("Invalid ObjectId")
+def validate_object_id(v):
+    """Validate ObjectId"""
+    if isinstance(v, ObjectId):
+        return v
+    if ObjectId.is_valid(v):
         return ObjectId(v)
+    raise ValueError("Invalid ObjectId")
 
-    @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string")
+
+PyObjectId = Annotated[ObjectId, BeforeValidator(validate_object_id)]
 
 
 class UserPlan(str):
@@ -28,7 +24,7 @@ class UserPlan(str):
 
 
 class User(BaseModel):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    id: Optional[PyObjectId] = Field(default=None, alias="_id")
     email: EmailStr
     hashed_password: str
     full_name: Optional[str] = None
@@ -44,7 +40,8 @@ class User(BaseModel):
     monthly_analyses_count: int = 0
     monthly_reset_date: Optional[datetime] = None
     
-    class Config:
-        populate_by_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
+    model_config = {
+        "populate_by_name": True,
+        "arbitrary_types_allowed": True,
+        "json_encoders": {ObjectId: str}
+    }
