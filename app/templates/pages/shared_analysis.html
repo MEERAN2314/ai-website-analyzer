@@ -141,7 +141,7 @@
         </div>
         
         <!-- Score Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h3 class="text-sm text-gray-600 mb-2">UX Score</h3>
                 <div class="text-3xl font-bold" id="uxScore">-</div>
@@ -157,6 +157,14 @@
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h3 class="text-sm text-gray-600 mb-2">Content</h3>
                 <div class="text-3xl font-bold" id="contentScore">-</div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-sm text-gray-600 mb-2">Security</h3>
+                <div class="text-3xl font-bold" id="securityScore">-</div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-sm text-gray-600 mb-2">Images</h3>
+                <div class="text-3xl font-bold" id="imagesScore">-</div>
             </div>
         </div>
         
@@ -180,11 +188,13 @@
         <!-- Detailed Analysis Tabs -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <div class="border-b border-gray-200 mb-6">
-                <nav class="-mb-px flex space-x-8">
-                    <button class="tab-btn active" data-tab="ux">UX Analysis</button>
-                    <button class="tab-btn" data-tab="seo">SEO Analysis</button>
+                <nav class="-mb-px flex flex-wrap space-x-4 md:space-x-8">
+                    <button class="tab-btn active" data-tab="ux">UX</button>
+                    <button class="tab-btn" data-tab="seo">SEO</button>
                     <button class="tab-btn" data-tab="performance">Performance</button>
                     <button class="tab-btn" data-tab="content">Content</button>
+                    <button class="tab-btn" data-tab="security">Security</button>
+                    <button class="tab-btn" data-tab="image">Images</button>
                 </nav>
             </div>
             
@@ -274,10 +284,12 @@ function displayResults(data) {
     overallScoreEl.className = `text-5xl font-bold ${getScoreColor(data.overall_score)}`;
     
     // Individual scores
-    document.getElementById('uxScore').textContent = data.ux_analysis.score.toFixed(0);
-    document.getElementById('seoScore').textContent = data.seo_analysis.score.toFixed(0);
-    document.getElementById('perfScore').textContent = data.performance_analysis.score.toFixed(0);
-    document.getElementById('contentScore').textContent = data.content_analysis.score.toFixed(0);
+    document.getElementById('uxScore').textContent = data.ux_analysis?.score?.toFixed(0) || '-';
+    document.getElementById('seoScore').textContent = data.seo_analysis?.score?.toFixed(0) || '-';
+    document.getElementById('perfScore').textContent = data.performance_analysis?.score?.toFixed(0) || '-';
+    document.getElementById('contentScore').textContent = data.content_analysis?.score?.toFixed(0) || '-';
+    document.getElementById('securityScore').textContent = data.security_analysis?.score?.toFixed(0) || '-';
+    document.getElementById('imagesScore').textContent = data.image_analysis?.score?.toFixed(0) || '-';
     
     // AI Summary - render as markdown
     const aiSummaryEl = document.getElementById('aiSummary');

@@ -466,6 +466,25 @@
                     </div>
                 </div>
                 
+                <!-- Suggested Questions -->
+                <div id="suggestedQuestions" class="mb-6 flex flex-wrap gap-2">
+                    <button class="suggested-question-btn" data-question="What should I fix first?">
+                        What should I fix first?
+                    </button>
+                    <button class="suggested-question-btn" data-question="How can I improve my SEO score?">
+                        How can I improve my SEO score?
+                    </button>
+                    <button class="suggested-question-btn" data-question="Why is my performance score low?">
+                        Why is my performance score low?
+                    </button>
+                    <button class="suggested-question-btn" data-question="How do I implement these security fixes?">
+                        How do I implement security fixes?
+                    </button>
+                    <button class="suggested-question-btn" data-question="What's the ROI of these improvements?">
+                        What's the ROI of improvements?
+                    </button>
+                </div>
+                
                 <div id="chatMessages" class="space-y-4 mb-6 max-h-96 overflow-y-auto"></div>
                 
                 <form id="chatForm" class="flex space-x-4">
@@ -516,6 +535,115 @@
 
 .tab-btn:hover svg {
     transform: scale(1.1);
+}
+
+/* Chat message styles */
+.chat-bubble {
+    padding: 1rem 1.5rem;
+    border-radius: 1rem;
+    max-width: 85%;
+    animation: slideIn 0.3s ease-out;
+}
+
+.chat-bubble.user {
+    background: linear-gradient(135deg, #2563EB 0%, #1e40af 100%);
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 0.25rem;
+}
+
+.chat-bubble.assistant {
+    background: #f3f4f6;
+    color: #1f2937;
+    margin-right: auto;
+    border-bottom-left-radius: 0.25rem;
+}
+
+.dark .chat-bubble.assistant {
+    background: #1e293b;
+    color: #f1f5f9;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Suggested questions */
+.suggested-question-btn {
+    padding: 0.5rem 1rem;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    color: #4b5563;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.suggested-question-btn:hover {
+    background: #2563EB;
+    color: white;
+    border-color: #2563EB;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+}
+
+.dark .suggested-question-btn {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+}
+
+.dark .suggested-question-btn:hover {
+    background: #2563EB;
+    color: white;
+    border-color: #2563EB;
+}
+
+/* Typing indicator */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: #f3f4f6;
+    border-radius: 1rem;
+    max-width: 85px;
+    margin-right: auto;
+}
+
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background: #9ca3af;
+    border-radius: 50%;
+    animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.7;
+    }
+    30% {
+        transform: translateY(-10px);
+        opacity: 1;
+    }
 }
 </style>
 
@@ -853,12 +981,76 @@ function addChatMessage(role, message) {
             console.error('Error rendering chat markdown:', error);
             messageDiv.innerHTML = formatTextAsHTML(message);
         }
+        
+        // Style links in assistant messages
+        const links = messageDiv.querySelectorAll('a');
+        links.forEach(link => {
+            link.className = 'text-blue-600 hover:text-blue-800 underline';
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+        });
     } else {
         messageDiv.textContent = message;
     }
     
     chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function showTypingIndicator() {
+    const chatMessages = document.getElementById('chatMessages');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'typing-indicator';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = '<span></span><span></span><span></span>';
+    chatMessages.appendChild(typingDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function hideTypingIndicator() {
+    const typingIndicator = document.getElementById('typingIndicator');
+    if (typingIndicator) {
+        typingIndicator.remove();
+    }
+}
+
+async function sendChatMessage(message) {
+    if (!message || !message.trim()) return;
+    
+    // Hide suggested questions after first message
+    const suggestedQuestions = document.getElementById('suggestedQuestions');
+    if (suggestedQuestions && suggestedQuestions.children.length > 0) {
+        suggestedQuestions.style.display = 'none';
+    }
+    
+    addChatMessage('user', message);
+    showTypingIndicator();
+    
+    try {
+        const token = localStorage.getItem('access_token');
+        const response = await fetch(`/api/v1/analysis/${analysisId}/chat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : ''
+            },
+            body: JSON.stringify({ message })
+        });
+        
+        hideTypingIndicator();
+        const data = await response.json();
+        
+        if (response.ok) {
+            addChatMessage('assistant', data.message);
+        } else {
+            addChatMessage('assistant', '❌ Sorry, I encountered an error. Please try again or rephrase your question.');
+            showNotification('Failed to send message', 'error');
+        }
+    } catch (error) {
+        hideTypingIndicator();
+        addChatMessage('assistant', '❌ Sorry, I encountered an error. Please try again.');
+        showNotification('An error occurred', 'error');
+    }
 }
 
 // Helper function to format text as HTML (fallback)
@@ -1057,32 +1249,19 @@ function setupEventListeners() {
             
             if (!message) return;
             
-            addChatMessage('user', message);
             input.value = '';
-            
-            try {
-                const token = localStorage.getItem('access_token');
-                const response = await fetch(`/api/v1/analysis/${analysisId}/chat`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': token ? `Bearer ${token}` : ''
-                    },
-                    body: JSON.stringify({ message })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    addChatMessage('assistant', data.message);
-                } else {
-                    showNotification('Failed to send message', 'error');
-                }
-            } catch (error) {
-                showNotification('An error occurred', 'error');
-            }
+            await sendChatMessage(message);
         });
     }
+    
+    // Suggested Questions
+    const suggestedQuestionBtns = document.querySelectorAll('.suggested-question-btn');
+    suggestedQuestionBtns.forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const question = btn.dataset.question;
+            await sendChatMessage(question);
+        });
+    });
 }
 
 // Old duplicate event listeners removed - now handled in setupEventListeners()

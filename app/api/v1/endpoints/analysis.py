@@ -120,7 +120,8 @@ async def chat_about_analysis(
     # Get analysis
     try:
         analysis = await db.analyses.find_one({"_id": ObjectId(analysis_id)})
-    except:
+    except Exception as e:
+        print(f"❌ Error finding analysis: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid analysis ID"
@@ -139,42 +140,76 @@ async def chat_about_analysis(
         )
     
     # Get chat history
-    chat_history = await db.chat_messages.find(
-        {"analysis_id": analysis_id}
-    ).sort("created_at", 1).to_list(length=50)
+    try:
+        chat_history = await db.chat_messages.find(
+            {"analysis_id": analysis_id}
+        ).sort("created_at", 1).to_list(length=50)
+    except Exception as e:
+        print(f"⚠️ Error loading chat history: {e}")
+        chat_history = []
     
-    # Generate AI response
-    ai_service = AIService()
-    response = await ai_service.chat_about_analysis(
-        analysis,
-        chat_request.message,
-        chat_history
-    )
+    # Generate AI response with error handling
+    try:
+        ai_service = AIService()
+        response = await ai_service.chat_about_analysis(
+            analysis,
+            chat_request.message,
+            chat_history
+        )
+    except Exception as e:
+        print(f"❌ Error generating AI response: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        # Provide a helpful fallback response
+        response = f"""I apologize, but I'm currently experiencing high demand and couldn't generate a detailed response. However, I can provide some general guidance:
+
+**Based on your question:** "{chat_request.message}"
+
+**Quick Tips:**
+- Review the detailed analysis sections above for specific issues and recommendations
+- Focus on high-priority items first for maximum impact
+- Check the Priority Recommendations section for actionable next steps
+- Your overall score is {analysis.get('overall_score', 'N/A'):.1f}/100
+
+**Category Scores:**
+- UX: {analysis.get('ux_analysis', {}).get('score', 'N/A')}/100
+- SEO: {analysis.get('seo_analysis', {}).get('score', 'N/A')}/100
+- Performance: {analysis.get('performance_analysis', {}).get('score', 'N/A')}/100
+- Content: {analysis.get('content_analysis', {}).get('score', 'N/A')}/100
+- Security: {analysis.get('security_analysis', {}).get('score', 'N/A')}/100
+- Images: {analysis.get('image_analysis', {}).get('score', 'N/A')}/100
+
+Please try asking your question again in a moment, or review the detailed analysis sections for more information."""
     
     # Save messages
-    user_message = {
-        "analysis_id": analysis_id,
-        "user_id": current_user.get("user_id") if current_user else None,
-        "role": "user",
-        "message": chat_request.message,
-        "created_at": datetime.utcnow()
-    }
-    
-    assistant_message = {
-        "analysis_id": analysis_id,
-        "user_id": current_user.get("user_id") if current_user else None,
-        "role": "assistant",
-        "message": response,
-        "created_at": datetime.utcnow()
-    }
-    
-    await db.chat_messages.insert_one(user_message)
-    await db.chat_messages.insert_one(assistant_message)
+    try:
+        user_message = {
+            "analysis_id": analysis_id,
+            "user_id": current_user.get("user_id") if current_user else None,
+            "role": "user",
+            "message": chat_request.message,
+            "created_at": datetime.utcnow()
+        }
+        
+        assistant_message = {
+            "analysis_id": analysis_id,
+            "user_id": current_user.get("user_id") if current_user else None,
+            "role": "assistant",
+            "message": response,
+            "created_at": datetime.utcnow()
+        }
+        
+        await db.chat_messages.insert_one(user_message)
+        await db.chat_messages.insert_one(assistant_message)
+    except Exception as e:
+        print(f"⚠️ Error saving chat messages: {e}")
+        # Continue anyway - we still want to return the response
     
     return ChatResponse(
         role="assistant",
         message=response,
-        created_at=assistant_message["created_at"]
+        created_at=datetime.utcnow()
     )
 
 

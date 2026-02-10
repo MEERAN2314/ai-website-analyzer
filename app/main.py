@@ -104,6 +104,24 @@ async def shared_analysis_page(request: Request, share_token: str):
         {"request": request, "share_token": share_token}
     )
 
+@app.get("/share/comparison/{share_token}", response_class=HTMLResponse)
+async def shared_comparison_page(request: Request, share_token: str):
+    """Shared comparison page"""
+    return templates.TemplateResponse(
+        "pages/shared_comparison.html",
+        {"request": request, "share_token": share_token}
+    )
+
+@app.get("/profile", response_class=HTMLResponse)
+async def profile_page(request: Request):
+    """User profile page"""
+    return templates.TemplateResponse("pages/profile.html", {"request": request})
+
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page(request: Request):
+    """User settings page"""
+    return templates.TemplateResponse("pages/profile.html", {"request": request})
+
 # Health check
 @app.get("/health")
 async def health_check():

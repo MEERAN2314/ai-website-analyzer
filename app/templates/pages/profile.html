@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - AI Website Analyzer{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Edit Profile</h1>
+            <p class="mt-2 text-gray-600 dark:text-gray-400">Manage your account settings and preferences</p>
+        </div>
+
+        <!-- Profile Form -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden">
+            
+            <!-- Profile Picture Section -->
+            <div class="p-8 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center space-x-6">
+                    <div class="relative">
+                        <div class="w-24 h-24 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+                            U
+                        </div>
+                        <button class="absolute bottom-0 right-0 w-8 h-8 bg-white dark:bg-gray-700 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                            <svg class="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Profile Picture</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Upload a new profile picture</p>
+                        <button class="mt-3 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition text-sm font-medium">
+                            Change Photo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personal Information -->
+            <div class="p-8">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Personal Information</h3>
+                
+                <form id="profileForm" class="space-y-6">
+                    
+                    <!-- Name Fields -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                First Name
+                            </label>
+                            <input type="text" id="firstName" 
+                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition"
+                                   placeholder="John" value="John">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Last Name
+                            </label>
+                            <input type="text" id="lastName" 
+                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition"
+                                   placeholder="Doe" value="Doe">
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Email Address
+                        </label>
+                        <input type="email" id="email" 
+                               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition"
+                               placeholder="john@example.com" value="user@example.com">
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">We'll never share your email with anyone else.</p>
+                    </div>
+
+                    <!-- Company -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Company (Optional)
+                        </label>
+                        <input type="text" id="company" 
+                               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition"
+                               placeholder="Acme Inc.">
+                    </div>
+
+                    <!-- Website -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Website (Optional)
+                        </label>
+                        <input type="url" id="website" 
+                               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition"
+                               placeholder="https://example.com">
+                    </div>
+
+                    <!-- Bio -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Bio (Optional)
+                        </label>
+                        <textarea id="bio" rows="4"
+                                  class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition resize-none"
+                                  placeholder="Tell us about yourself..."></textarea>
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Brief description for your profile.</p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <button type="button" onclick="window.location.href='/dashboard'" 
+                                class="px-6 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg font-medium transition">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Password Section -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden mt-6">
+            <div class="p-8">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Change Password</h3>
+                
+                <form id="passwordForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Current Password
+                        </label>
+                        <input type="password" id="currentPassword" 
+                               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition"
+                               placeholder="••••••••">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                New Password
+                            </label>
+                            <input type="password" id="newPassword" 
+                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition"
+                                   placeholder="••••••••">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Confirm New Password
+                            </label>
+                            <input type="password" id="confirmPassword" 
+                                   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition"
+                                   placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <button type="submit" 
+                                class="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                            Update Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden mt-6 border-2 border-red-200 dark:border-red-900">
+            <div class="p-8">
+                <h3 class="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">Danger Zone</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">Once you delete your account, there is no going back. Please be certain.</p>
+                
+                <button onclick="confirmDelete()" 
+                        class="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition">
+                    Delete Account
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// Profile Form Submission
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = {
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        email: document.getElementById('email').value,
+        company: document.getElementById('company').value,
+        website: document.getElementById('website').value,
+        bio: document.getElementById('bio').value
+    };
+    
+    try {
+        // TODO: Implement API call
+        console.log('Saving profile:', formData);
+        
+        // Show success message
+        showNotification('Profile updated successfully!', 'success');
+    } catch (error) {
+        showNotification('Failed to update profile', 'error');
+    }
+});
+
+// Password Form Submission
+document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (newPassword !== confirmPassword) {
+        showNotification('Passwords do not match', 'error');
+        return;
+    }
+    
+    if (newPassword.length < 8) {
+        showNotification('Password must be at least 8 characters', 'error');
+        return;
+    }
+    
+    try {
+        // TODO: Implement API call
+        console.log('Updating password');
+        
+        // Clear form
+        document.getElementById('passwordForm').reset();
+        
+        // Show success message
+        showNotification('Password updated successfully!', 'success');
+    } catch (error) {
+        showNotification('Failed to update password', 'error');
+    }
+});
+
+// Delete Account Confirmation
+function confirmDelete() {
+    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        if (confirm('This will permanently delete all your data. Are you absolutely sure?')) {
+            // TODO: Implement account deletion
+            console.log('Deleting account');
+            showNotification('Account deletion initiated', 'success');
+        }
+    }
+}
+
+// Notification Helper
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-4 right-4 px-6 py-4 rounded-lg shadow-lg z-50 transform transition-all duration-300 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    } text-white`;
+    notification.style.opacity = '0';
+    notification.style.transform = 'translateY(20px)';
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateY(0)';
+    }, 10);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+</script>
+{% endblock %}
