@@ -122,7 +122,50 @@ async def settings_page(request: Request):
     """User settings page"""
     return templates.TemplateResponse("pages/profile.html", {"request": request})
 
-# Health check
+@app.get("/pricing", response_class=HTMLResponse)
+async def pricing_page(request: Request):
+    """Pricing page"""
+    return templates.TemplateResponse("pages/pricing.html", {"request": request})
+
+@app.get("/clear-session", response_class=HTMLResponse)
+async def clear_session_page(request: Request):
+    """Clear session and logout"""
+    return templates.TemplateResponse("pages/clear_session.html", {"request": request})
+
+# Health check endpoints
 @app.get("/health")
 async def health_check():
+    """Basic health check"""
     return {"status": "healthy", "version": settings.APP_VERSION}
+
+@app.get("/api/v1/health")
+async def api_health_check():
+    """Comprehensive health check for monitoring"""
+    import time
+    from app.core.database import db
+    from app.core.redis import redis_client
+    
+    health_status = {
+        "status": "healthy",
+        "version": settings.APP_VERSION,
+        "timestamp": time.time(),
+        "services": {}
+    }
+    
+    # Check MongoDB
+    try:
+        await db.command("ping")
+        health_status["services"]["mongodb"] = "healthy"
+    except Exception as e:
+        health_status["services"]["mongodb"] = f"unhealthy: {str(e)}"
+        health_status["status"] = "degraded"
+    
+    # Check Redis
+    try:
+        await redis_client.ping()
+        health_status["services"]["redis"] = "healthy"
+    except Exception as e:
+        health_status["services"]["redis"] = f"unhealthy: {str(e)}"
+        health_status["status"] = "degraded"
+    
+    return health_status

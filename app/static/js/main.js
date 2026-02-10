@@ -110,5 +110,11 @@ function getScoreBgColor(score) {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
+    // Remove any demo/test tokens on first load
+    // Comment out these lines after first run if you want to stay logged in
+    // Uncomment to clear demo login:
+    // localStorage.removeItem('access_token');
+    // localStorage.removeItem('refresh_token');
+    
     updateAuthUI();
 });
