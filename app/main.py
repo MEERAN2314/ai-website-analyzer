@@ -83,6 +83,19 @@ async def results_page(request: Request, analysis_id: str):
         {"request": request, "analysis_id": analysis_id}
     )
 
+@app.get("/compare", response_class=HTMLResponse)
+async def comparison_create_page(request: Request):
+    """Competitor comparison creation page"""
+    return templates.TemplateResponse("pages/comparison_create.html", {"request": request})
+
+@app.get("/comparison/{comparison_id}", response_class=HTMLResponse)
+async def comparison_results_page(request: Request, comparison_id: str):
+    """Comparison results page"""
+    return templates.TemplateResponse(
+        "pages/comparison_results.html",
+        {"request": request, "comparison_id": comparison_id}
+    )
+
 @app.get("/share/{share_token}", response_class=HTMLResponse)
 async def shared_analysis_page(request: Request, share_token: str):
     """Render shared analysis page"""
